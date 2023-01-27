@@ -8,8 +8,10 @@ import numpy as np
 
 class LiborCurve(AbsCurve):
 
-    def __init__(self, curve_points: List[Dict[str, float]]):
+    def __init__(self, curve_points: List[Dict[str, float]], interpolation_type='linear'):
         assert any('time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points)
+
+        self._interpolation_type = interpolation_type
 
         get_time = lambda curve_point: curve_point['time']
         self._t = np.array(list(map(get_time, curve_points)))
@@ -19,15 +21,15 @@ class LiborCurve(AbsCurve):
 
         self._curve_points = dict(zip(self._t, self._s))
 
-    def interpolate_curve(self, t, interpolation_type='linear'):
-        if interpolation_type == 'linear':
+    def interpolate_curve(self, t):
+        if self._interpolation_type == 'linear':
             s_interp = np.interp(t, self._t, self._s, right=np.nan, left=1)
             return s_interp
         else:
             raise ValueError
 
-    def interpolate_discount_factor(self, t, interpolation_type='linear'):
-        return spot_rate_to_discount(self.interpolate_curve(t, interpolation_type=interpolation_type), t)
+    def interpolate_discount_factor(self, t):
+        return spot_rate_to_discount(self.interpolate_curve(t), t)
 
     def is_extrapolated(self, t):
 
