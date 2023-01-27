@@ -1,6 +1,6 @@
-from typing import List, Dict
+from typing import Dict
 
-from libor_curve import LiborCurve
+from curve.libor_curve import LiborCurve
 from .long_libor_curve_builder import LongLiborCurveBuilder
 from .mid_libor_curve_builder import MidLiborCurveBuilder
 from .short_libor_curve_builder import ShortLiborCurveBuilder

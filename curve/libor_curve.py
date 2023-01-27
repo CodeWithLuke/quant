@@ -1,4 +1,5 @@
 from typing import List, Dict
+from utils.conversion import *
 
 import numpy as np
 
@@ -21,6 +22,9 @@ class LiborCurve:
             return s_interp
         else:
             raise ValueError
+
+    def interpolate_discount(self, t, interpolation_type='linear'):
+        return spot_rate_to_discount(self.interpolate_curve(t, interpolation_type=interpolation_type), t)
 
     def is_extrapolated(self, t):
 

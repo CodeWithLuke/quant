@@ -2,7 +2,7 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-from libor_curve_builder.libor_curve_builder import LiborCurveBuilder
+from curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 import plotly.express as px
 
 def print_hi(name):
@@ -17,6 +17,8 @@ if __name__ == '__main__':
     swap_rate = {2.0: 2.3, 4.0: 2.7}
     fcb = LiborCurveBuilder(deposits, futures, swap_rate)
     curve = fcb.curve()
+
+    print(curve.interpolate_discount(1))
 
     fig = px.scatter(x=curve._t, y=curve._s)
     fig.show()

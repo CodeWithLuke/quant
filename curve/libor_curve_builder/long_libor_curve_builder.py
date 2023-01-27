@@ -1,7 +1,7 @@
 from typing import Dict, List
-from math import log, exp
-from libor_curve import LiborCurve
-from utils.conversion import spot_rate_to_discount, discount_to_spot_rate
+from math import log
+from curve.libor_curve import LiborCurve
+from utils.conversion import spot_rate_to_discount
 
 import numpy as np
 
