@@ -5,6 +5,8 @@
 from curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 import plotly.express as px
 
+from product.cash_flow import CashFlow
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -18,9 +20,15 @@ if __name__ == '__main__':
     fcb = LiborCurveBuilder(deposits, futures, swap_rate)
     curve = fcb.curve()
 
-    print(curve.interpolate_discount(1))
+    cf_product = CashFlow(100000, 1)
 
-    fig = px.scatter(x=curve._t, y=curve._s)
-    fig.show()
+    print(cf_product.present_value(curve))
+
+    # print(curve.interpolate_discount_factor(1))
+    #
+    # fig = px.scatter(x=curve._t, y=curve._s)
+    # fig.show()
+
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

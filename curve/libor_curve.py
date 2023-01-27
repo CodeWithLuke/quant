@@ -1,10 +1,13 @@
 from typing import List, Dict
+
+from curve.abs_curve import AbsCurve
 from utils.conversion import *
 
 import numpy as np
 
 
-class LiborCurve:
+class LiborCurve(AbsCurve):
+
     def __init__(self, curve_points: List[Dict[str, float]]):
         assert any('time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points)
 
@@ -23,7 +26,7 @@ class LiborCurve:
         else:
             raise ValueError
 
-    def interpolate_discount(self, t, interpolation_type='linear'):
+    def interpolate_discount_factor(self, t, interpolation_type='linear'):
         return spot_rate_to_discount(self.interpolate_curve(t, interpolation_type=interpolation_type), t)
 
     def is_extrapolated(self, t):
