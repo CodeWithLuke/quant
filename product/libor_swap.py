@@ -58,6 +58,8 @@ class LiborSwap:
 
         return int(self._payer_receiver) * (floating_leg_value - fixed_leg_value)
 
+
+# TODO: check if this generalizes for forward swaps
     def par_rate(self, libor_curve: LiborCurve):
         discount_factor_sum = sum(
             libor_curve.interpolate_discount_factor(t) for t in self._times_of_cash_flows

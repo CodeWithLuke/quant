@@ -21,9 +21,11 @@ if __name__ == '__main__':
 
     swap_product = LiborSwap(100000, 3, CashFlowFrequency.QUARTERLY, 0.02)
 
-    print(swap_product.present_value(curve))
+    forward_swap_product = LiborSwap(100000, 4, CashFlowFrequency.QUARTERLY, 0.02, start_time=1)
 
-    print(swap_product.par_rate(curve))
+    print(forward_swap_product.present_value(curve))
+
+    print(forward_swap_product.par_rate(curve))
 
     # print(curve.interpolate_discount_factor(1))
     #
