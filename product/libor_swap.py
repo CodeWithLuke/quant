@@ -48,7 +48,8 @@ class LiborSwap:
         self._payer_receiver = payer_receiver
 
     def present_value(self, libor_curve: LiborCurve):
-        floating_leg_value = self._notional * (1 - libor_curve.interpolate_discount_factor(self._end_time))
+        floating_leg_value = self._notional * (libor_curve.interpolate_discount_factor(self._start_time)
+                                               - libor_curve.interpolate_discount_factor(self._end_time))
 
         fixed_cash_flow_notional = self._swap_rate * self._notional / self._number_of_cash_flows
 
@@ -58,12 +59,12 @@ class LiborSwap:
 
         return int(self._payer_receiver) * (floating_leg_value - fixed_leg_value)
 
-
-# TODO: check if this generalizes for forward swaps
     def par_rate(self, libor_curve: LiborCurve):
         discount_factor_sum = sum(
             libor_curve.interpolate_discount_factor(t) for t in self._times_of_cash_flows
         )
 
-        return self._number_of_cash_flows*(
-                1 - libor_curve.interpolate_discount_factor(self._end_time)) / discount_factor_sum
+        d_range = libor_curve.interpolate_discount_factor(self._start_time) - libor_curve.interpolate_discount_factor(
+            self._end_time)
+
+        return self._number_of_cash_flows * d_range / discount_factor_sum
