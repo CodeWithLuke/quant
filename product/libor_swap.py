@@ -2,7 +2,7 @@ from enum import IntEnum
 
 from utils.constants import FLOAT_EQ_THRESHOLD
 
-from curve.libor_curve import LiborCurve
+from curve.libor_curve import LiborCurve, InterestType
 from utils.enum import CashFlowFrequency
 from product.cash_flow import CashFlow
 
@@ -28,6 +28,8 @@ class LiborSwap:
 
         # want start time over zero
         assert start_time >= -FLOAT_EQ_THRESHOLD
+
+        self._interest_type = InterestType.SIMPLE
 
         self._cash_flow_frequency = cash_flow_frequency
 
@@ -61,10 +63,12 @@ class LiborSwap:
 
     def par_rate(self, libor_curve: LiborCurve):
         discount_factor_sum = sum(
-            libor_curve.interpolate_discount_factor(t) for t in self._times_of_cash_flows
+            libor_curve.interpolate_discount_factor(t, compounding=self._interest_type)
+            for t in self._times_of_cash_flows
         )
 
-        d_range = libor_curve.interpolate_discount_factor(self._start_time) - libor_curve.interpolate_discount_factor(
-            self._end_time)
+        d_range = libor_curve.interpolate_discount_factor(
+            self._start_time, compounding=self._interest_type) - libor_curve.interpolate_discount_factor(
+            self._end_time, compounding=self._interest_type)
 
         return self._number_of_cash_flows * d_range / discount_factor_sum
