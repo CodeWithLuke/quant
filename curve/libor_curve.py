@@ -36,7 +36,7 @@ class LiborCurve(AbsCurve):
         self._s = np.array(list(map(get_spot_rate, curve_points)))
 
         if interpolation_type == InterpolationType.CUBIC_SPLINE:
-            self._interpolator = CubicSpline(self._t, self._s)
+            self._interpolator = CubicSpline(self._t, self._s, extrapolate=False)
 
         self._curve_points = dict(zip(self._t, self._s))
 
