@@ -1,15 +1,8 @@
-from enum import IntEnum
-
 from utils.constants import FLOAT_EQ_THRESHOLD
 
-from curve.libor_curve import LiborCurve, InterestType
-from utils.enum import CashFlowFrequency
+from curve.libor_curve import LiborCurve
+from utils.enum import CashFlowFrequency, InterestType, PayerReceiver
 from product.cash_flow import CashFlow
-
-
-class PayerReceiver(IntEnum):
-    PAYER = 1
-    RECEIVER = -1
 
 
 class LiborSwap:

@@ -1,5 +1,5 @@
 # This is a sample Python script.
-
+from curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 from curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
@@ -17,15 +17,19 @@ if __name__ == '__main__':
     fcb = LiborCurveBuilder(deposits, futures, swap_rate)
     curve = fcb.curve()
 
+    bumped_curves = bump_libor_curve(curve)
+
+    print(curve.interpolate_discount_factor(3.0))
+
     cf_product = CashFlow(100000, 1)
 
-    swap_product = LiborSwap(100000, 3, CashFlowFrequency.QUARTERLY, 0.02)
+    swap_product = LiborSwap(100000, 3, CashFlowFrequency.SEMI_ANNUAL, 0.02)
 
-    forward_swap_product = LiborSwap(100000, 4, CashFlowFrequency.QUARTERLY, 0.02, start_time=1)
+    forward_swap_product = LiborSwap(100000, 4, CashFlowFrequency.QUARTERLY, 0.02)
 
-    print(forward_swap_product.present_value(curve))
+    print(swap_product.present_value(curve))
 
-    print(forward_swap_product.par_rate(curve))
+    print(swap_product.par_rate(curve))
 
     # print(curve.interpolate_discount_factor(1))
     #

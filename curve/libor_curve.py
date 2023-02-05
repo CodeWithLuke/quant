@@ -1,20 +1,12 @@
 from typing import List, Dict
-from enum import Enum
 
 from curve.abs_curve import AbsCurve
+from utils.enum import CurveInstrument, InterpolationType, InterestType
 from utils.conversion import *
 
 import numpy as np
 
 from scipy.interpolate import CubicSpline
-
-class InterpolationType(Enum):
-    LINEAR = 1
-    CUBIC_SPLINE = 2
-
-class InterestType(Enum):
-    SIMPLE = 1
-    COMPOUNDING = 2
 
 
 class LiborCurve(AbsCurve):
@@ -38,7 +30,7 @@ class LiborCurve(AbsCurve):
         if interpolation_type == InterpolationType.CUBIC_SPLINE:
             self._interpolator = CubicSpline(self._t, self._s, extrapolate=False)
 
-        self._curve_points = dict(zip(self._t, self._s))
+        self._yield_curve_points = dict(zip(self._t, self._s))
 
     def interpolate_curve(self, t):
         if self._interpolation_type == InterpolationType.LINEAR:
@@ -67,11 +59,12 @@ class LiborCurve(AbsCurve):
         return t > max(self._t) or t < min(self._t)
 
     def __getitem__(self, time):
-        if time in self._curve_points:
-            return self._curve_points[time]
+        if time in self._yield_curve_points:
+            return self._yield_curve_points[time]
         else:
             return self.interpolate_curve(time)
 
-    def bump_curve(self, n_bps_bump):
-        bumped_curve_points = {}
+    @property
+    def market_quotes(self) -> Dict[CurveInstrument, Dict[float, float]]:
+        return self._market_quotes
 

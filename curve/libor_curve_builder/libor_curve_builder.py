@@ -1,6 +1,7 @@
 from typing import Dict
 
 from curve.libor_curve import LiborCurve
+from utils.enum import CurveInstrument, InterpolationType
 from .long_libor_curve_builder import LongLiborCurveBuilder
 from .mid_libor_curve_builder import MidLiborCurveBuilder
 from .short_libor_curve_builder import ShortLiborCurveBuilder
@@ -25,6 +26,22 @@ class LiborCurveBuilder:
 
         self._curve_data += lcb.curve
 
-    def curve(self):
+        self._market_data = {
+            CurveInstrument.CASH_DEPOSIT: cash_libor_rates, CurveInstrument.IR_FUTURES: eurodollar_futures_prices,
+            CurveInstrument.IR_SWAP: market_swap_rates
+        }
 
-        return LiborCurve(self._curve_data)
+    @classmethod
+    def from_market_data_dict(cls, market_data: dict):
+        assert all([curve_instrument in market_data for curve_instrument in (
+            CurveInstrument.CASH_DEPOSIT, CurveInstrument.IR_FUTURES, CurveInstrument.IR_SWAP)])
+
+        return cls(
+            market_data[CurveInstrument.CASH_DEPOSIT], market_data[CurveInstrument.IR_FUTURES],
+            market_data[CurveInstrument.IR_SWAP]
+        )
+
+    def curve(self, interpolation_type=InterpolationType.LINEAR):
+
+        return LiborCurve(self._curve_data, interpolation_type=interpolation_type, market_quotes=self._market_data)
+
