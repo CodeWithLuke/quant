@@ -31,6 +31,13 @@ if __name__ == '__main__':
 
     print(swap_product.par_rate(curve))
 
+    risk_report = swap_product.first_order_risk(libor_curve=curve)
+
+    for node, risk in risk_report.items():
+        print(f"{node}: {risk}")
+
+    print(swap_product.first_order_risk(libor_curve=curve))
+
     # print(curve.interpolate_discount_factor(1))
     #
     # fig = px.scatter(x=curve._t, y=curve._s)

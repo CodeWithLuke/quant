@@ -1,3 +1,4 @@
+from curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
 from utils.constants import FLOAT_EQ_THRESHOLD
 
 from curve.libor_curve import LiborCurve
@@ -65,3 +66,15 @@ class LiborSwap:
             self._end_time, compounding=self._interest_type)
 
         return self._number_of_cash_flows * d_range / discount_factor_sum
+
+    def first_order_risk(self, libor_curve: LiborCurve):
+        risk_map = dict()
+
+        bumped_curve_map = bump_libor_curve(libor_curve)
+
+        npv = self.present_value(libor_curve)
+
+        for node, bumped_curve in bumped_curve_map.items():
+            risk_map[node] = self.present_value(bumped_curve) - npv
+
+        return risk_map
