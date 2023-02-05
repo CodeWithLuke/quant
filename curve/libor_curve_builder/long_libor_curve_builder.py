@@ -1,13 +1,12 @@
 from typing import Dict, List
 from math import log
 from curve.libor_curve import LiborCurve
-from utils.conversion import spot_rate_to_discount
+from utils.constants import FLOAT_EQ_THRESHOLD
+from utils.conversion import spot_rate_to_discount, discount_to_spot_rate
 
 import numpy as np
 
 class LongLiborCurveBuilder:
-
-    THRESHOLD = 1e-06
 
     _key_f = lambda dp: dp['time']
 
@@ -55,16 +54,16 @@ class LongLiborCurveBuilder:
 
         for t, s in self._swap_quotes.items():
 
-            while abs(t - self._iter_t) > self.THRESHOLD:
+            while abs(t - self._iter_t) > FLOAT_EQ_THRESHOLD:
                 self._discount_factors_sum += self.get_discount_factor_from_swap_rate(
                     self.interpolate_swap_rates(self._iter_t)
                 )
 
                 self._iter_t += 0.5
 
-            spot_rate = -1 * log(self.get_discount_factor_from_swap_rate(
-                    self.interpolate_swap_rates(t)
-                )) / t
+            spot_rate = discount_to_spot_rate(
+                self.get_discount_factor_from_swap_rate(self.interpolate_swap_rates(t)), t
+            )
 
             long_curve.append({'time': t, 'spot_rate': spot_rate})
 
