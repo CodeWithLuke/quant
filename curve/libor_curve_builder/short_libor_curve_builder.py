@@ -1,6 +1,5 @@
-from math import log
 from typing import Dict
-from utils.conversion import discount_to_spot_rate
+from utils.utils import discount_to_spot_rate
 
 
 class ShortLiborCurveBuilder:

@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from curve.abs_curve import AbsCurve
 from utils.enum import CurveInstrument, InterpolationType, InterestType
-from utils.conversion import *
+from utils.utils import *
 
 import numpy as np
 

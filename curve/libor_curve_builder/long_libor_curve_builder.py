@@ -1,8 +1,7 @@
 from typing import Dict, List
-from math import log
 from curve.libor_curve import LiborCurve
 from utils.constants import FLOAT_EQ_THRESHOLD
-from utils.conversion import spot_rate_to_discount, discount_to_spot_rate
+from utils.utils import spot_rate_to_discount, discount_to_spot_rate
 
 import numpy as np
 
