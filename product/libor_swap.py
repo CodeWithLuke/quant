@@ -47,7 +47,7 @@ class LiborSwap:
         floating_leg_value = self._notional * (libor_curve.interpolate_discount_factor(self._start_time)
                                                - libor_curve.interpolate_discount_factor(self._end_time))
 
-        fixed_cash_flow_notional = self._swap_rate * self._notional / self._number_of_cash_flows
+        fixed_cash_flow_notional = self._swap_rate * self._notional / self._cash_flow_frequency
 
         fixed_leg_value = sum(
             CashFlow(fixed_cash_flow_notional, t).present_value(libor_curve) for t in self._times_of_cash_flows
@@ -65,7 +65,7 @@ class LiborSwap:
             self._start_time, compounding=self._interest_type) - libor_curve.interpolate_discount_factor(
             self._end_time, compounding=self._interest_type)
 
-        return self._number_of_cash_flows * d_range / discount_factor_sum
+        return self._cash_flow_frequency * d_range / discount_factor_sum
 
     def first_order_risk(self, libor_curve: LiborCurve):
         risk_map = dict()
