@@ -20,14 +20,9 @@ class LiborSwap:
 
         assert cash_flow_frequency is not None and not cash_flow_frequency == CashFlowFrequency.NONE
 
-        # want start time over zero
-        assert start_time >= -FLOAT_EQ_THRESHOLD
-
         self._interest_type = InterestType.SIMPLE
 
         self._cash_flow_frequency = cash_flow_frequency
-
-        self._number_of_cash_flows = round(self._maturity * int(self._cash_flow_frequency))
 
         self._cash_flow_period = 1 / int(cash_flow_frequency)
 
@@ -35,7 +30,9 @@ class LiborSwap:
         self._times_of_cash_flows = []
         t = self._end_time
 
-        for i in range(self._number_of_cash_flows):
+        number_of_cash_flows = round(self._maturity * int(self._cash_flow_frequency))
+
+        for i in range(number_of_cash_flows):
             self._times_of_cash_flows.insert(0, t)
             t -= self._cash_flow_period
 
@@ -47,7 +44,7 @@ class LiborSwap:
         floating_leg_value = self._notional * (libor_curve.interpolate_discount_factor(self._start_time)
                                                - libor_curve.interpolate_discount_factor(self._end_time))
 
-        fixed_cash_flow_notional = self._swap_rate * self._notional / self._cash_flow_frequency
+        fixed_cash_flow_notional = self._swap_rate * self._notional / float(self._cash_flow_frequency)
 
         fixed_leg_value = sum(
             CashFlow(fixed_cash_flow_notional, t).present_value(libor_curve) for t in self._times_of_cash_flows
