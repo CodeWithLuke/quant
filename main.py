@@ -1,8 +1,8 @@
 # This is a sample Python script.
-from curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
+from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-from curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
+from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 import plotly.express as px
 
 from product.cash_flow import CashFlow
@@ -23,9 +23,7 @@ if __name__ == '__main__':
 
     cf_product = CashFlow(100000, 1)
 
-    swap_product = LiborSwap(100000, 3, CashFlowFrequency.SEMI_ANNUAL, 0.02)
-
-    forward_swap_product = LiborSwap(100000, 4, CashFlowFrequency.QUARTERLY, 0.02)
+    swap_product = LiborSwap(100000, 4, CashFlowFrequency.SEMI_ANNUAL, 0.02)
 
     print(swap_product.present_value(curve))
 
@@ -38,7 +36,7 @@ if __name__ == '__main__':
 
     print(swap_product.first_order_risk(libor_curve=curve))
 
-    # print(curve.interpolate_discount_factor(1))
+    # print(yield_curve.interpolate_discount_factor(1))
     #
-    # fig = px.scatter(x=curve._t, y=curve._s)
+    # fig = px.scatter(x=yield_curve._t, y=yield_curve._s)
     # fig.show()

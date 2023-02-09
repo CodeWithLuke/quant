@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from curve.abs_curve import AbsCurve
+from yield_curve.abs_curve import AbsCurve
 from utils.enum import CurveInstrument, InterpolationType, InterestType
 from utils.utils import *
 

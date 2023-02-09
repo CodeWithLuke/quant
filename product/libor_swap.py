@@ -1,7 +1,7 @@
-from curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
+from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
 from utils.constants import FLOAT_EQ_THRESHOLD
 
-from curve.libor_curve import LiborCurve
+from yield_curve.libor_curve import LiborCurve
 from utils.enum import CashFlowFrequency, InterestType, PayerReceiver
 from product.cash_flow import CashFlow
 

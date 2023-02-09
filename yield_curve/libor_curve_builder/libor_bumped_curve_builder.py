@@ -1,5 +1,5 @@
-from curve.libor_curve import LiborCurve
-from curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
+from yield_curve.libor_curve import LiborCurve
+from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 from utils.constants import BASIS_POINT_CONVERSION
 
 from copy import deepcopy

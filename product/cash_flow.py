@@ -1,4 +1,4 @@
-from curve.abs_curve import AbsCurve
+from yield_curve.abs_curve import AbsCurve
 
 
 class CashFlow:
