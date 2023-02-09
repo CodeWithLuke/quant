@@ -5,7 +5,7 @@ from scipy.optimize import newton
 from utils.enum import CashFlowFrequency
 
 
-class Bond:
+class FixedRateBond:
     def __init__(self, notional: float, maturity: float, coupon_frequency: CashFlowFrequency,
                  coupon_rate: float = None):
         self.notional = notional
