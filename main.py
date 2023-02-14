@@ -5,6 +5,8 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
 from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 import plotly.express as px
 
+from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
+
 from product.cash_flow import CashFlow
 from product.libor_swap import LiborSwap
 from utils.enum import CashFlowFrequency
@@ -23,7 +25,7 @@ if __name__ == '__main__':
 
     cf_product = CashFlow(100000, 1)
 
-    swap_product = LiborSwap(100000, 4, CashFlowFrequency.SEMI_ANNUAL, 0.02)
+    swap_product = LiborSwap(100000, 3, CashFlowFrequency.SEMI_ANNUAL, 0.02)
 
     print(swap_product.present_value(curve))
 
@@ -36,7 +38,11 @@ if __name__ == '__main__':
 
     print(swap_product.first_order_risk(libor_curve=curve))
 
-    # print(yield_curve.interpolate_discount_factor(1))
+    vol = AtmSwaptionVolSurface.from_csv(r"vol_surface/sample_vols.csv")
+
+    v = vol.interpolate_vol(1/6, 3)
+
+    print(curve.interpolate_discount_factor(1))
     #
     # fig = px.scatter(x=yield_curve._t, y=yield_curve._s)
     # fig.show()

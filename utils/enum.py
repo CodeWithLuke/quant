@@ -28,3 +28,7 @@ class InterestType(Enum):
 class PayerReceiver(IntEnum):
     PAYER = 1
     RECEIVER = -1
+
+class OptionType(IntEnum):
+    CALL = 1
+    PUT = -1
