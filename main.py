@@ -1,4 +1,5 @@
 # This is a sample Python script.
+from product.libor_swaption import LiborSwaption
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -27,7 +28,11 @@ if __name__ == '__main__':
 
     swap_product = LiborSwap(100000, 3, CashFlowFrequency.SEMI_ANNUAL, 0.02)
 
+    par_swap = LiborSwap.par_swap(curve, 1000000, 3, CashFlowFrequency.SEMI_ANNUAL, start_time=1)
+
     print(swap_product.present_value(curve))
+
+    print(par_swap.present_value(curve))
 
     print(swap_product.par_rate(curve))
 
@@ -40,7 +45,9 @@ if __name__ == '__main__':
 
     vol = AtmSwaptionVolSurface.from_csv(r"vol_surface/sample_vols.csv")
 
-    v = vol.interpolate_vol(1/6, 3)
+    swaption = LiborSwaption(par_swap)
+
+    print(swaption.present_value(curve, vol))
 
     print(curve.interpolate_discount_factor(1))
     #

@@ -34,7 +34,7 @@ class LiborSwap:
         self._payer_receiver = payer_receiver
 
     @classmethod
-    def par_swap(cls, libor_curve, notional: float, maturity: float, cash_flow_frequency: CashFlowFrequency,
+    def par_swap(cls, libor_curve: LiborCurve, notional: float, maturity: float, cash_flow_frequency: CashFlowFrequency,
                  payer_receiver=PayerReceiver.PAYER, interest_type :InterestType = InterestType.COMPOUNDING,
                  start_time: float = 0.):
 
@@ -110,3 +110,27 @@ class LiborSwap:
             risk_map[node] = self.present_value(bumped_curve) - npv
 
         return risk_map
+
+    @property
+    def start_time(self):
+        return self._start_time
+
+    @property
+    def swap_rate(self):
+        return self._swap_rate
+
+    @property
+    def maturity(self):
+        return self._maturity
+
+    @property
+    def cash_flow_frequency(self):
+        return self._cash_flow_frequency
+
+    @property
+    def times_of_cash_flows(self):
+        return self._times_of_cash_flows
+
+    @property
+    def notional(self):
+        return self._notional
