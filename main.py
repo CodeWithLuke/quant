@@ -49,7 +49,11 @@ if __name__ == '__main__':
 
     print(swaption.present_value(curve, vol))
 
-    print(curve.interpolate_discount_factor(1))
+    swaption_risk_report =  swaption.first_order_risk(curve, vol)
+
+    for node, risk in swaption_risk_report.items():
+        print(f"{node}: {risk}")
+
     #
     # fig = px.scatter(x=yield_curve._t, y=yield_curve._s)
     # fig.show()

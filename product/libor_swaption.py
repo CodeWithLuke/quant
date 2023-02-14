@@ -5,6 +5,10 @@ from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
 from scipy.stats import norm
+
+from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
+
+
 class LiborSwaption:
 
     def __init__(self, forward_swap: LiborSwap, option_type: OptionType = OptionType.CALL):
@@ -40,4 +44,14 @@ class LiborSwaption:
 
         return l * a * (s_k * norm.cdf(-d_2) - s_0 * norm.cdf(-d_1))
 
+    def first_order_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
+        risk_map = dict()
 
+        bumped_curve_map = bump_libor_curve(libor_curve)
+
+        npv = self.present_value(libor_curve, swaption_vol_surface)
+
+        for node, bumped_curve in bumped_curve_map.items():
+            risk_map[node] = self.present_value(bumped_curve, swaption_vol_surface) - npv
+
+        return risk_map
