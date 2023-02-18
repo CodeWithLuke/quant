@@ -1,6 +1,7 @@
 from typing import List
 
-from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
+from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node, \
+    bump_all_libor_curve_nodes
 
 from yield_curve.libor_curve import LiborCurve
 from utils.enum import CashFlowFrequency, InterestType, PayerReceiver
@@ -99,10 +100,19 @@ class LiborSwap:
 
         return cash_flow_frequency * d_range / discount_factor_sum
 
-    def first_order_risk(self, libor_curve: LiborCurve):
+    def pv01(self, libor_curve: LiborCurve):
+        parallel_bumped_curve = bump_all_libor_curve_nodes(libor_curve)
+
+        npv = self.present_value(libor_curve)
+
+        bumped_npv = self.present_value(parallel_bumped_curve)
+
+        return bumped_npv - npv
+
+    def first_order_curve_risk(self, libor_curve: LiborCurve):
         risk_map = dict()
 
-        bumped_curve_map = bump_libor_curve(libor_curve)
+        bumped_curve_map = bump_libor_curve_by_node(libor_curve)
 
         npv = self.present_value(libor_curve)
 
