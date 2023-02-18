@@ -6,7 +6,7 @@ from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
 from scipy.stats import norm
 
-from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve
+from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 
 
 class LiborSwaption:
@@ -22,6 +22,8 @@ class LiborSwaption:
         self._swap_tenor_years = self._underlying_swap.maturity
 
         self._notional = self._underlying_swap.notional
+
+        self._option_type = option_type
 
 
     def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
@@ -42,12 +44,12 @@ class LiborSwaption:
 
         l = self._notional
 
-        return l * a * (s_k * norm.cdf(-d_2) - s_0 * norm.cdf(-d_1))
+        return l * a * (s_k * norm.cdf(-d_2) - s_0 * norm.cdf(-d_1)) * self._option_type
 
-    def first_order_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
+    def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()
 
-        bumped_curve_map = bump_libor_curve(libor_curve)
+        bumped_curve_map = bump_libor_curve_by_node(libor_curve)
 
         npv = self.present_value(libor_curve, swaption_vol_surface)
 
