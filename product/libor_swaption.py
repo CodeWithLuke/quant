@@ -1,6 +1,6 @@
 from product.cash_flow import CashFlow
 from product.libor_swap import LiborSwap
-from utils.enum import CashFlowFrequency, PayerReceiver, OptionType
+from utils.enum import OptionType
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
@@ -34,7 +34,7 @@ class LiborSwaption:
 
         vol = swaption_vol_surface.interpolate_vol(self._swaption_expiry, self._swap_tenor_years)
 
-        d_1 = (log(s_0/ self._strike) + 0.5 * self._swaption_expiry * vol**2) / (vol * sqrt(self._swaption_expiry))
+        d_1 = (log(s_0/ s_k) + 0.5 * self._swaption_expiry * vol**2) / (vol * sqrt(self._swaption_expiry))
 
         d_2 = d_1 - vol * sqrt(self._swaption_expiry)
 
@@ -44,7 +44,7 @@ class LiborSwaption:
 
         l = self._notional
 
-        return l * a * (s_k * norm.cdf(-d_2) - s_0 * norm.cdf(-d_1)) * self._option_type
+        return l * a * (s_0 * norm.cdf(d_1 * self._option_type) - s_k * norm.cdf(d_2 * self._option_type)) * self._option_type
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()
@@ -57,3 +57,31 @@ class LiborSwaption:
             risk_map[node] = self.present_value(bumped_curve, swaption_vol_surface) - npv
 
         return risk_map
+
+    def gamma_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
+
+        npv_1_map = dict()
+
+        bumped_1_curve_map = bump_libor_curve_by_node(libor_curve)
+
+        npv_0 = self.present_value(libor_curve, swaption_vol_surface)
+
+        for node, bumped_curve in bumped_1_curve_map.items():
+            npv_1_map[node] = self.present_value(bumped_curve, swaption_vol_surface)
+
+        npv_2_map = dict()
+
+        bumped_2_curve_map = bump_libor_curve_by_node(libor_curve, n_bps_bump=2)
+
+        for node, bumped_curve in bumped_2_curve_map.items():
+            npv_2_map[node] = self.present_value(bumped_curve, swaption_vol_surface)
+
+        assert set(npv_1_map.keys()) == set(npv_2_map.keys())
+
+        delta_1_map = {node: npv_2_map[node] - npv_1_map[node] for node in npv_1_map.keys()}
+
+        delta_0_map = {node: npv_1 - npv_0 for node, npv_1 in npv_1_map.items()}
+
+        gamma_map = {node: delta_1_map[node] - delta_0_map[node] for node in delta_0_map.keys()}
+
+        return gamma_map
