@@ -32,3 +32,7 @@ class PayerReceiver(IntEnum):
 class OptionType(IntEnum):
     CALL = 1
     PUT = -1
+
+class SwapLegType(Enum):
+    FIXED = 0
+    FLOATING = 1

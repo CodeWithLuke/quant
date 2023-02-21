@@ -4,8 +4,10 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
     bump_all_libor_curve_nodes
 
 from yield_curve.libor_curve import LiborCurve
-from utils.enum import CashFlowFrequency, InterestType, PayerReceiver
+from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegType
 from product.cash_flow import CashFlow
+
+from product.swap_leg_cash_flow import SwapLegCashFlow
 
 
 class LiborSwap:
@@ -65,6 +67,47 @@ class LiborSwap:
         return self._calc_par_rate(libor_curve, self._times_of_cash_flows, self._interest_type, self._maturity,
                                    self._start_time, self._cash_flow_frequency)
 
+    def cash_flow_report(self, libor_curve: LiborCurve):
+        times_of_cash_flows = self._times_of_cash_flows
+
+        cash_flow_report = []
+
+        for t in times_of_cash_flows:
+            d_t = libor_curve.interpolate_discount_factor(t)
+
+            cash_flow = SwapLegCashFlow(
+                t, self._swap_rate, SwapLegType.FIXED, self._notional, d_t, self._cash_flow_frequency
+            )
+
+            cash_flow_report.append(cash_flow.as_dict())
+
+        # insert 0 at beginning for loop to be complete
+        times_of_cash_flows.insert(0, self._start_time)
+
+        # floating leg
+        for i in range(1, len(times_of_cash_flows)):
+
+            t_i = times_of_cash_flows[i]
+
+            t_im1 = times_of_cash_flows[i-1]
+
+            d_i = libor_curve.interpolate_discount_factor(t_i)
+
+            d_im1 = libor_curve.interpolate_discount_factor(t_im1)
+
+            floating_factor = d_im1 - d_i
+
+            projected_rate = floating_factor * self._cash_flow_frequency / d_i
+
+            cash_flow = SwapLegCashFlow(
+                t_i, projected_rate, SwapLegType.FLOATING, self._notional, d_i, self._cash_flow_frequency
+            )
+
+            cash_flow_report.append(cash_flow.as_dict())
+
+        cash_flow_report.sort(key=lambda cf: cf['time'])
+
+        return cash_flow_report
 
     @staticmethod
     def _get_times_of_cash_flows(cash_flow_frequency: CashFlowFrequency, maturity: float, start_time: float):

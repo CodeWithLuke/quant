@@ -30,6 +30,8 @@ if __name__ == '__main__':
 
     par_swap = LiborSwap.par_swap(curve, 1000000, 3, CashFlowFrequency.SEMI_ANNUAL, start_time=1)
 
+    cash_flows = par_swap.cash_flow_report(curve)
+
     print(swap_product.present_value(curve))
 
     print("Par_Swap_PV: ", par_swap.present_value(curve))
@@ -49,7 +51,7 @@ if __name__ == '__main__':
 
     vol = AtmSwaptionVolSurface.from_csv(r"vol_surface/sample_vols.csv")
 
-    swaption = LiborSwaption(par_swap, option_type=OptionType.PUT)
+    swaption = LiborSwaption(par_swap, option_type=OptionType.CALL)
 
     print("Swaption NPV:", swaption.present_value(curve, vol))
 
