@@ -72,11 +72,14 @@ class LiborSwap:
 
         cash_flow_report = []
 
+        notional_w_sign = self.notional * int(self._payer_receiver)
+
+        # fixed leg
         for t in times_of_cash_flows:
             d_t = libor_curve.interpolate_discount_factor(t)
 
             cash_flow = SwapLegCashFlow(
-                t, self._swap_rate, SwapLegType.FIXED, self._notional, d_t, self._cash_flow_frequency
+                t, self._swap_rate, SwapLegType.FIXED, -1 * notional_w_sign, d_t, self._cash_flow_frequency
             )
 
             cash_flow_report.append(cash_flow.as_dict())
@@ -100,7 +103,7 @@ class LiborSwap:
             projected_rate = floating_factor * self._cash_flow_frequency / d_i
 
             cash_flow = SwapLegCashFlow(
-                t_i, projected_rate, SwapLegType.FLOATING, self._notional, d_i, self._cash_flow_frequency
+                t_i, projected_rate, SwapLegType.FLOATING, notional_w_sign, d_i, self._cash_flow_frequency
             )
 
             cash_flow_report.append(cash_flow.as_dict())
