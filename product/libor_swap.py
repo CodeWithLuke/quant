@@ -190,3 +190,7 @@ class LiborSwap:
     @property
     def notional(self):
         return self._notional
+
+    @property
+    def payer_receiver(self):
+        return self._payer_receiver

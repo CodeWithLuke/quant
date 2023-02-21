@@ -1,6 +1,6 @@
 from product.cash_flow import CashFlow
 from product.libor_swap import LiborSwap
-from utils.enum import OptionType
+from utils.enum import OptionType, CashFlowFrequency, PayerReceiver
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
@@ -11,9 +11,12 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
 
 class LiborSwaption:
 
-    def __init__(self, forward_swap: LiborSwap, option_type: OptionType = OptionType.CALL):
+    def __init__(self, notional: float, strike: float, swaption_expiry: float, swap_tenor_years: float,
+                 swap_cash_flow_frequency: CashFlowFrequency, swap_payer_receiver: PayerReceiver,
+                 option_type: OptionType = OptionType.CALL):
 
-        self._underlying_swap = forward_swap
+        self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
+                                          swap_payer_receiver, swaption_expiry)
 
         self._swaption_expiry = self._underlying_swap.start_time
 
@@ -25,6 +28,11 @@ class LiborSwaption:
 
         self._option_type = option_type
 
+    @classmethod
+    def from_swap(cls, forward_swap: LiborSwap, option_type: OptionType = OptionType.CALL):
+
+        return cls(forward_swap.notional, forward_swap.swap_rate, forward_swap.start_time, forward_swap.maturity,
+                   forward_swap.cash_flow_frequency, forward_swap.payer_receiver, option_type=option_type)
 
     def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
 
