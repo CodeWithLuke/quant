@@ -38,12 +38,11 @@ class LiborSwap:
 
     @classmethod
     def par_swap(cls, libor_curve: LiborCurve, notional: float, maturity: float, cash_flow_frequency: CashFlowFrequency,
-                 payer_receiver=PayerReceiver.PAYER, interest_type :InterestType = InterestType.COMPOUNDING,
-                 start_time: float = 0.):
+                 payer_receiver=PayerReceiver.PAYER, start_time: float = 0.):
 
         times_of_cash_flows = cls._get_times_of_cash_flows(cash_flow_frequency, maturity, start_time)
 
-        swap_rate = cls._calc_par_rate(libor_curve, times_of_cash_flows, interest_type, maturity, start_time,
+        swap_rate = cls._calc_par_rate(libor_curve, times_of_cash_flows, maturity, start_time,
                                        cash_flow_frequency)
 
         return cls(notional, maturity, cash_flow_frequency, swap_rate, payer_receiver, start_time)
@@ -57,18 +56,18 @@ class LiborSwap:
         fixed_cash_flow_notional = self._swap_rate * self._notional / float(self._cash_flow_frequency)
 
         fixed_leg_value = sum(
-            CashFlow(fixed_cash_flow_notional, t).present_value(libor_curve) for t in self._times_of_cash_flows
+            [fixed_cash_flow_notional * libor_curve.interpolate_discount_factor(t) for t in self._times_of_cash_flows]
         )
 
         return int(self._payer_receiver) * (floating_leg_value - fixed_leg_value)
 
     def par_rate(self, libor_curve: LiborCurve):
 
-        return self._calc_par_rate(libor_curve, self._times_of_cash_flows, self._interest_type, self._maturity,
-                                   self._start_time, self._cash_flow_frequency)
+        return self._calc_par_rate(libor_curve, self._times_of_cash_flows, self._maturity, self._start_time,
+                                   self._cash_flow_frequency)
 
     def cash_flow_report(self, libor_curve: LiborCurve):
-        times_of_cash_flows = self._times_of_cash_flows
+        times_of_cash_flows = self._times_of_cash_flows.copy()
 
         cash_flow_report = []
 
@@ -130,19 +129,16 @@ class LiborSwap:
 
 
     @staticmethod
-    def _calc_par_rate(libor_curve: LiborCurve, times_of_cash_flows: List[float], interest_type: InterestType,
-                       maturity, start_time, cash_flow_frequency: CashFlowFrequency):
+    def _calc_par_rate(libor_curve: LiborCurve, times_of_cash_flows: List[float], maturity, start_time,
+                       cash_flow_frequency: CashFlowFrequency):
 
         end_time = start_time + maturity
 
         discount_factor_sum = sum(
-            libor_curve.interpolate_discount_factor(t, compounding=interest_type)
-            for t in times_of_cash_flows
+            [libor_curve.interpolate_discount_factor(t) for t in times_of_cash_flows]
         )
 
-        d_range = libor_curve.interpolate_discount_factor(
-            start_time, compounding=interest_type) - libor_curve.interpolate_discount_factor(
-            end_time, compounding=interest_type)
+        d_range = libor_curve.interpolate_discount_factor(start_time) - libor_curve.interpolate_discount_factor(end_time)
 
         return cash_flow_frequency * d_range / discount_factor_sum
 
