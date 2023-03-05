@@ -1,6 +1,6 @@
 from product.cash_flow import CashFlow
 from product.libor_swap import LiborSwap
-from utils.enum import OptionType, CashFlowFrequency, PayerReceiver
+from utils.enum import OptionType, CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
@@ -13,7 +13,7 @@ class LiborSwaption:
 
     def __init__(self, notional: float, strike: float, swaption_expiry: float, swap_tenor_years: float,
                  swap_cash_flow_frequency: CashFlowFrequency, swap_payer_receiver: PayerReceiver,
-                 option_type: OptionType = OptionType.CALL):
+                 option_type: OptionType = OptionType.CALL, long_short: LongShort = LongShort.LONG):
 
         self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
                                           swap_payer_receiver, swaption_expiry)
@@ -27,6 +27,8 @@ class LiborSwaption:
         self._notional = self._underlying_swap.notional
 
         self._option_type = option_type
+
+        self._long_short = long_short
 
     @classmethod
     def from_swap(cls, forward_swap: LiborSwap, option_type: OptionType = OptionType.CALL):
@@ -50,9 +52,9 @@ class LiborSwaption:
 
         a = (1/m) * sum([CashFlow(1, t).present_value(libor_curve) for t in self._underlying_swap.times_of_cash_flows])
 
-        l = self._notional
+        l = self._notional * self._long_short * self._option_type
 
-        return l * a * (s_0 * norm.cdf(d_1 * self._option_type) - s_k * norm.cdf(d_2 * self._option_type)) * self._option_type
+        return l * a * (s_0 * norm.cdf(d_1 * self._option_type) - s_k * norm.cdf(d_2 * self._option_type))
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()

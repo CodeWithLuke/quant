@@ -22,16 +22,24 @@ class InterpolationType(Enum):
 
 class InterestType(Enum):
     SIMPLE = 1
-    COMPOUNDING = 2
+    CONTINUOUS = 2
 
 
+# For swap this is relative to the fixed rate
 class PayerReceiver(IntEnum):
     PAYER = 1
     RECEIVER = -1
 
+
+class LongShort(IntEnum):
+    LONG = 1
+    SHORT = -1
+
+
 class OptionType(IntEnum):
     CALL = 1
     PUT = -1
+
 
 class SwapLegType(Enum):
     FIXED = 0

@@ -24,7 +24,7 @@ class LiborSwap:
 
         assert cash_flow_frequency is not None and not cash_flow_frequency == CashFlowFrequency.NONE
 
-        self._interest_type = InterestType.COMPOUNDING
+        self._interest_type = InterestType.CONTINUOUS
 
         self._cash_flow_frequency = cash_flow_frequency
 
