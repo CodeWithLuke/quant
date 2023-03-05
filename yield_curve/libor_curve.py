@@ -43,8 +43,8 @@ class LiborCurve(AbsCurve):
         else:
             raise ValueError
 
-    def interpolate_discount_factor(self, t, compounding=InterestType.COMPOUNDING):
-        if compounding == InterestType.COMPOUNDING:
+    def interpolate_discount_factor(self, t, compounding=InterestType.CONTINUOUS):
+        if compounding == InterestType.CONTINUOUS:
             return spot_rate_to_discount(self.interpolate_curve(t), t)
 
         elif compounding == InterestType.SIMPLE:
@@ -54,6 +54,15 @@ class LiborCurve(AbsCurve):
         else:
             raise ValueError
 
+    def interpolate_forward_rate(self, t, term=1, compounding=InterestType.CONTINUOUS):
+        t_a = t
+        t_b = t + term
+
+        d_a = self.interpolate_discount_factor(t_a, compounding)
+
+        d_b = self.interpolate_discount_factor(t_b, compounding)
+
+        return -1 * log(d_b/d_a) / term
 
     def is_extrapolated(self, t):
         return t > max(self._t) or t < min(self._t)
