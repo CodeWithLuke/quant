@@ -50,7 +50,7 @@ class LiborSwaption:
 
         m = int(self._underlying_swap.cash_flow_frequency)
 
-        a = (1/m) * sum([CashFlow(1, t).present_value(libor_curve) for t in self._underlying_swap.times_of_cash_flows])
+        a = (1/m) * sum([libor_curve.interpolate_discount_factor(t) for t in self._underlying_swap.times_of_cash_flows])
 
         l = self._notional * self._long_short * self._option_type
 
