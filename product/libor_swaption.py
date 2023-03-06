@@ -95,3 +95,16 @@ class LiborSwaption:
         gamma_map = {node: delta_1_map[node] - delta_0_map[node] for node in delta_0_map.keys()}
 
         return gamma_map
+
+    def surface_vega_risk(self, libor_curve, swaption_vol_surface: AtmSwaptionVolSurface):
+
+        npv_map = dict()
+
+        npv = self.present_value(libor_curve, swaption_vol_surface)
+
+        for expiry_tenor_tuple, bumped_surface in swaption_vol_surface.bump_surface().items():
+            bump_npv = self.present_value(libor_curve, bumped_surface)
+
+            npv_map[expiry_tenor_tuple] = bump_npv - npv
+
+        return npv_map

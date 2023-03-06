@@ -10,10 +10,10 @@ from utils.constants import BASIS_POINT_CONVERSION
 
 class AtmSwaptionVolSurface:
 
-    def __init__(self, points: List[np.array], data: List[float]):
+    def __init__(self, points: np.array, data: np.array):
 
-        self._points = np.array(points)
-        self._data = np.array(data)
+        self._points = points
+        self._data = data
 
     @classmethod
     def from_market_data(cls, expiries: List[float], tenors: List[float], vol_data: List[List[float]]):
@@ -27,7 +27,7 @@ class AtmSwaptionVolSurface:
                 points.append(np.array([float(expiry), float(tenor)]))
                 data.append(float(vol_data[i][j]) / 100)
 
-        return cls(points, data)
+        return cls(np.array(points), np.array(data))
 
     @classmethod
     def from_csv (cls, path):
@@ -45,3 +45,21 @@ class AtmSwaptionVolSurface:
 
     def interpolate_vol(self, expiry, tenor):
         return griddata(self._points, self._data, (np.array([expiry]), np.array([tenor])))[0]
+
+    def bump_surface(self, n_bps_bump=1):
+
+        bumped_surfaces = {}
+
+        bump = n_bps_bump * BASIS_POINT_CONVERSION ** 2
+
+        for i, point in enumerate(self._points):
+
+            data = self._data.copy()
+
+            data[i] += bump
+
+            bumped_surfaces[tuple(point)] = AtmSwaptionVolSurface(self._points.copy(), data)
+
+        return bumped_surfaces
+
+
