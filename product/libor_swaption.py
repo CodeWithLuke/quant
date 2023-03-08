@@ -1,6 +1,5 @@
-from product.cash_flow import CashFlow
 from product.libor_swap import LiborSwap
-from utils.enum import OptionType, CashFlowFrequency, PayerReceiver, LongShort
+from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from math import log, sqrt
@@ -13,7 +12,7 @@ class LiborSwaption:
 
     def __init__(self, notional: float, strike: float, swaption_expiry: float, swap_tenor_years: float,
                  swap_cash_flow_frequency: CashFlowFrequency, swap_payer_receiver: PayerReceiver,
-                 option_type: OptionType = OptionType.CALL, long_short: LongShort = LongShort.LONG):
+                 long_short: LongShort = LongShort.LONG):
 
         self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
                                           swap_payer_receiver, swaption_expiry)
@@ -26,15 +25,15 @@ class LiborSwaption:
 
         self._notional = self._underlying_swap.notional
 
-        self._option_type = option_type
+        self._payer_receiver = self._underlying_swap.payer_receiver
 
         self._long_short = long_short
 
     @classmethod
-    def from_swap(cls, forward_swap: LiborSwap, option_type: OptionType = OptionType.CALL):
+    def from_forward_swap(cls, forward_swap: LiborSwap, long_short: LongShort = LongShort.LONG):
 
         return cls(forward_swap.notional, forward_swap.swap_rate, forward_swap.start_time, forward_swap.maturity,
-                   forward_swap.cash_flow_frequency, forward_swap.payer_receiver, option_type=option_type)
+                   forward_swap.cash_flow_frequency, forward_swap.payer_receiver, long_short)
 
     def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
 
@@ -52,9 +51,38 @@ class LiborSwaption:
 
         a = (1/m) * sum([libor_curve.interpolate_discount_factor(t) for t in self._underlying_swap.times_of_cash_flows])
 
-        l = self._notional * self._long_short * self._option_type
+        l = self._notional * self._long_short * self._payer_receiver
 
-        return l * a * (s_0 * norm.cdf(d_1 * self._option_type) - s_k * norm.cdf(d_2 * self._option_type))
+        return l * a * (s_0 * norm.cdf(d_1 * self._payer_receiver) - s_k * norm.cdf(d_2 * self._payer_receiver))
+
+    def cash_flow_report(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
+
+        s_0 = self._underlying_swap.par_rate(libor_curve)
+
+        s_k = self._strike
+
+        vol = swaption_vol_surface.interpolate_vol(self._swaption_expiry, self._swap_tenor_years)
+
+        d_1 = (log(s_0/ s_k) + 0.5 * self._swaption_expiry * vol**2) / (vol * sqrt(self._swaption_expiry))
+
+        d_2 = d_1 - vol * sqrt(self._swaption_expiry)
+
+        m = int(self._underlying_swap.cash_flow_frequency)
+
+        l = self._notional * self._long_short * self._payer_receiver
+
+        projected_cash_flows = []
+
+        for t in self._underlying_swap.times_of_cash_flows:
+            discount_factor = libor_curve.interpolate_discount_factor(t)
+
+            projected_cash_flow = (l/m) * discount_factor * self._payer_receiver * (
+                    s_0 * norm.cdf(d_1 * self._payer_receiver) - s_k * norm.cdf(d_2 * self._payer_receiver))
+
+            projected_cash_flows.append({"time": t, "df": discount_factor, "projected": projected_cash_flow})
+
+        return projected_cash_flows
+
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()

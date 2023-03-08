@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 import pandas as pd
 from scipy.interpolate import griddata
@@ -61,5 +61,3 @@ class AtmSwaptionVolSurface:
             bumped_surfaces[tuple(point)] = AtmSwaptionVolSurface(self._points.copy(), data)
 
         return bumped_surfaces
-
-

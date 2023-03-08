@@ -5,7 +5,6 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
 
 from yield_curve.libor_curve import LiborCurve
 from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegType
-from product.cash_flow import CashFlow
 
 from product.swap_leg_cash_flow import SwapLegCashFlow
 

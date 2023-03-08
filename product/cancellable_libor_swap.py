@@ -1,6 +1,6 @@
 from product.libor_swap import LiborSwap
 from product.libor_swaption import LiborSwaption
-from utils.enum import CashFlowFrequency, PayerReceiver, OptionType, LongShort
+from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
@@ -34,7 +34,7 @@ class CancellableLiborSwap:
 
         self._offsetting_swaption = LiborSwaption(
             notional, swap_rate, termination_date, offsetting_swaption_tenor, swap_cash_flow_frequency,
-            offsetting_swaption_payer_receiver, option_type=OptionType.CALL, long_short=offsetting_swaption_long_short
+            offsetting_swaption_payer_receiver, long_short=offsetting_swaption_long_short
         )
 
         self._termination_date = termination_date
