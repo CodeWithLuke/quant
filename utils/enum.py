@@ -44,3 +44,7 @@ class OptionType(IntEnum):
 class SwapLegType(Enum):
     FIXED = 0
     FLOATING = 1
+
+class CapFloor(IntEnum):
+    CAP = 1
+    FLOOR = -1
