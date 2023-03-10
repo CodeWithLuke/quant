@@ -55,7 +55,7 @@ if __name__ == '__main__':
     #
     # print(swap_product.pv01(curve))
 
-    vol = AtmSwaptionVolSurface.from_csv(r"vol_surface/sample_vols.csv")
+    vol = AtmSwaptionVolSurface.from_csv(r"vol_surface/sample_swaption_vols.csv")
 
     bumped_vols = vol.bump_surface()
 
