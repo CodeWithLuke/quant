@@ -2,8 +2,65 @@ from math import log, sqrt
 
 from scipy.stats import norm
 
-from utils.enum import CapFloor, LongShort
+from utils.enum import CapFloor, LongShort, CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
+
+from vol_surface.cap_vol_surface import CapVolSurface
+
+
+class Cap:
+
+    def __init__(self, notional: float, strike_rate: float, maturity: float,
+                 payment_frequency: CashFlowFrequency= CashFlowFrequency.SEMI_ANNUAL,
+                 cap_floor: CapFloor = CapFloor.CAP, long_short: LongShort = LongShort.LONG):
+
+        self._notional = notional
+
+        self._strike_rate = strike_rate
+
+        self._cap_floor = cap_floor
+
+        self._long_short = long_short
+
+        self._maturity = maturity
+
+        assert round(12 * maturity) % payment_frequency == 0, maturity
+
+        # time between reset date and payoff date
+        self._period = 1 / payment_frequency
+
+        self._reset_dates = []
+        i = 1
+
+        while round(self._period * i) < self._maturity:
+
+            self._reset_dates.append(self._period * i)
+
+            i += 1
+
+        self._caplets = []
+
+        for reset_date in self._reset_dates:
+
+            self._caplets.append(self.build_caplet(reset_date))
+
+
+    def build_caplet(self, reset_date: float):
+        payoff_date = reset_date + self._period
+        return Caplet(notional=self._notional, strike_rate=self._strike_rate, reset_date=reset_date,
+                      payoff_date=payoff_date, cap_floor=self._cap_floor, long_short=self._long_short)
+
+
+    def present_value(self, libor_curve: LiborCurve, vol_surface: CapVolSurface):
+
+        volatility = vol_surface.interpolate_vol(self._maturity)
+
+        pv = 0
+
+        for caplet in self._caplets:
+            pv += caplet.present_value(libor_curve,volatility)
+
+        return pv
 
 
 class Caplet:
@@ -38,5 +95,5 @@ class Caplet:
 
         d2 = d1 - volatility * sqrt(self._reset_date)
 
-        return notional_product * (forward_rate * norm.cdf(d1 * float(self._cap_floor)) - self._reset_date * norm.cdf(
+        return notional_product * (forward_rate * norm.cdf(d1 * float(self._cap_floor)) - self._strike_rate * norm.cdf(
             d2 * float(self._cap_floor)))

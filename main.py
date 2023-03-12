@@ -1,6 +1,8 @@
 # This is a sample Python script.
 from product.cancellable_libor_swap import CancellableLiborSwap
+from product.libor_cap_floor import Cap
 from product.libor_swaption import LiborSwaption
+from vol_surface.cap_vol_surface import CapVolSurface
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -127,3 +129,9 @@ if __name__ == '__main__':
 
     for node, risk in swaption_risk_report.items():
         print(f"{node}: {risk}")
+
+    cap_vol = CapVolSurface.from_csv("./vol_surface/simple_cap_vol.csv")
+
+    cap_floor = Cap(1000000, 0.025, 5)
+
+    print(cap_floor.present_value(libor_curve=curve, vol_surface=cap_vol))
