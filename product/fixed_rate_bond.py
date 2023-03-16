@@ -72,5 +72,3 @@ class FixedRateBond:
         def _f(z): return self.present_value(libor_curve, z) - price
 
         return newton(_f, 0)
-
-
