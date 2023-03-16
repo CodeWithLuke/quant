@@ -2,6 +2,7 @@ from math import log, sqrt
 
 from scipy.stats import norm
 
+from product.libor_swap import LiborSwap
 from utils.enum import CapFloor, LongShort, CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
 
@@ -44,12 +45,19 @@ class Cap:
 
             self._caplets.append(self.build_caplet(reset_date))
 
+    @classmethod
+    def get_par_cap(cls, libor_curve: LiborCurve, notional: float, maturity: float,
+                    payment_frequency: CashFlowFrequency, cap_floor: CapFloor = CapFloor.CAP,
+                    long_short: LongShort = LongShort.LONG):
+        strike_rate = cls._calc_par_rate(notional, maturity, libor_curve, payment_frequency)
+
+        return cls(notional, strike_rate, maturity, payment_frequency, cap_floor, long_short)
+
 
     def build_caplet(self, reset_date: float):
         payoff_date = reset_date + self._period
         return Caplet(notional=self._notional, strike_rate=self._strike_rate, reset_date=reset_date,
                       payoff_date=payoff_date, cap_floor=self._cap_floor, long_short=self._long_short)
-
 
     def present_value(self, libor_curve: LiborCurve, vol_surface: CapVolSurface):
 
@@ -61,6 +69,13 @@ class Cap:
             pv += caplet.present_value(libor_curve,volatility)
 
         return pv
+
+    @staticmethod
+    def _calc_par_rate(notional: float, maturity: float, libor_curve: LiborCurve, payment_frequency: CashFlowFrequency):
+        assert round(12 * maturity) % payment_frequency == 0, maturity
+        swap_start = 1 / payment_frequency
+        par_swap = LiborSwap.par_swap(libor_curve, notional, maturity - swap_start, payment_frequency, start_time=swap_start)
+        return par_swap.swap_rate
 
 
 class Caplet:
