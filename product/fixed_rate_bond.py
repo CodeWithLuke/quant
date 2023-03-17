@@ -67,7 +67,7 @@ class FixedRateBond:
             -1 * self.maturity * yield_rate
         )
 
-    def get_z_spread(self, price: float, libor_curve: LiborCurve):
+    def z_spread(self, price: float, libor_curve: LiborCurve):
 
         def _f(z): return self.present_value(libor_curve, z) - price
 
