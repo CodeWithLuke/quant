@@ -1,7 +1,7 @@
 from typing import Dict
 
-from yield_curve.libor_curve import LiborCurve
 from utils.enum import CurveInstrument, InterpolationType
+from yield_curve.libor_curve import LiborCurve
 from .long_libor_curve_builder import LongLiborCurveBuilder
 from .mid_libor_curve_builder import MidLiborCurveBuilder
 from .short_libor_curve_builder import ShortLiborCurveBuilder
@@ -10,7 +10,6 @@ from .short_libor_curve_builder import ShortLiborCurveBuilder
 class LiborCurveBuilder:
     def __init__(self, cash_libor_rates: Dict[float, float], eurodollar_futures_prices: Dict[float, float],
                  market_swap_rates: Dict[float, float]):
-
         # short yield_curve
         scb = ShortLiborCurveBuilder(cash_libor_rates)
 
@@ -42,6 +41,4 @@ class LiborCurveBuilder:
         )
 
     def curve(self, interpolation_type=InterpolationType.LINEAR):
-
         return LiborCurve(self._curve_data, interpolation_type=interpolation_type, market_quotes=self._market_data)
-

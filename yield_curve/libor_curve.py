@@ -1,18 +1,17 @@
 from typing import List, Dict
 
-from yield_curve.abs_curve import AbsCurve
+import numpy as np
+from scipy.interpolate import CubicSpline
+
 from utils.enum import CurveInstrument, InterpolationType, InterestType
 from utils.utils import *
-
-import numpy as np
-
-from scipy.interpolate import CubicSpline
+from yield_curve.abs_curve import AbsCurve
 
 
 class LiborCurve(AbsCurve):
 
     def __init__(self, curve_points: List[Dict[str, float]], interpolation_type=InterpolationType.CUBIC_SPLINE,
-                 market_quotes: dict =None):
+                 market_quotes: dict = None):
         assert any('time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points)
 
         self._market_quotes = market_quotes
@@ -62,7 +61,7 @@ class LiborCurve(AbsCurve):
 
         d_b = self.interpolate_discount_factor(t_b, compounding)
 
-        return -1 * log(d_b/d_a) / term
+        return -1 * log(d_b / d_a) / term
 
     def is_extrapolated(self, t):
         return t > max(self._t) or t < min(self._t)

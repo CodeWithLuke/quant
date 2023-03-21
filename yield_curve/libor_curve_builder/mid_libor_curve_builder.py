@@ -1,5 +1,7 @@
 from typing import Dict
+
 from utils.utils import spot_rate_to_discount, discount_to_spot_rate, future_price_to_forward_rate
+
 
 class MidLiborCurveBuilder:
 
@@ -16,7 +18,6 @@ class MidLiborCurveBuilder:
         delta_t = t - first_point_time
         discount_factor = first_point_discount / (1 + delta_t * forward_rate)
         return discount_to_spot_rate(discount_factor, t)
-
 
     def build_curve(self):
         mid_curve = []

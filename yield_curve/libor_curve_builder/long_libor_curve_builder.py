@@ -1,12 +1,13 @@
 from typing import Dict, List
-from yield_curve.libor_curve import LiborCurve
-from utils.constants import FLOAT_EQ_THRESHOLD
-from utils.utils import spot_rate_to_discount, discount_to_spot_rate
 
 import numpy as np
 
-class LongLiborCurveBuilder:
+from utils.constants import FLOAT_EQ_THRESHOLD
+from utils.utils import spot_rate_to_discount, discount_to_spot_rate
+from yield_curve.libor_curve import LiborCurve
 
+
+class LongLiborCurveBuilder:
     _key_f = lambda dp: dp['time']
 
     _val_f = lambda dp: dp['value']
@@ -44,7 +45,7 @@ class LongLiborCurveBuilder:
 
         swap_quote /= 100
 
-        discount_factor = (2 - swap_quote*self._discount_factors_sum)/(2 + swap_quote)
+        discount_factor = (2 - swap_quote * self._discount_factors_sum) / (2 + swap_quote)
 
         return discount_factor
 
@@ -67,5 +68,3 @@ class LongLiborCurveBuilder:
             long_curve.append({'time': t, 'spot_rate': spot_rate})
 
         return long_curve
-
-

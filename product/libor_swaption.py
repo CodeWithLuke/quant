@@ -1,10 +1,11 @@
+from math import log, sqrt
+
+from scipy.stats import norm
+
 from product.libor_swap import LiborSwap
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
-from math import log, sqrt
-from scipy.stats import norm
-
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 
 
@@ -43,13 +44,14 @@ class LiborSwaption:
 
         vol = swaption_vol_surface.interpolate_vol(self._swaption_expiry, self._swap_tenor_years)
 
-        d_1 = (log(s_0/ s_k) + 0.5 * self._swaption_expiry * vol**2) / (vol * sqrt(self._swaption_expiry))
+        d_1 = (log(s_0 / s_k) + 0.5 * self._swaption_expiry * vol ** 2) / (vol * sqrt(self._swaption_expiry))
 
         d_2 = d_1 - vol * sqrt(self._swaption_expiry)
 
         m = int(self._underlying_swap.cash_flow_frequency)
 
-        a = (1/m) * sum([libor_curve.interpolate_discount_factor(t) for t in self._underlying_swap.times_of_cash_flows])
+        a = (1 / m) * sum(
+            [libor_curve.interpolate_discount_factor(t) for t in self._underlying_swap.times_of_cash_flows])
 
         l = self._notional * self._long_short * self._payer_receiver
 
@@ -63,7 +65,7 @@ class LiborSwaption:
 
         vol = swaption_vol_surface.interpolate_vol(self._swaption_expiry, self._swap_tenor_years)
 
-        d_1 = (log(s_0/ s_k) + 0.5 * self._swaption_expiry * vol**2) / (vol * sqrt(self._swaption_expiry))
+        d_1 = (log(s_0 / s_k) + 0.5 * self._swaption_expiry * vol ** 2) / (vol * sqrt(self._swaption_expiry))
 
         d_2 = d_1 - vol * sqrt(self._swaption_expiry)
 
@@ -76,13 +78,12 @@ class LiborSwaption:
         for t in self._underlying_swap.times_of_cash_flows:
             discount_factor = libor_curve.interpolate_discount_factor(t)
 
-            projected_cash_flow = (l/m) * discount_factor * self._payer_receiver * (
+            projected_cash_flow = (l / m) * discount_factor * self._payer_receiver * (
                     s_0 * norm.cdf(d_1 * self._payer_receiver) - s_k * norm.cdf(d_2 * self._payer_receiver))
 
             projected_cash_flows.append({"time": t, "df": discount_factor, "projected": projected_cash_flow})
 
         return projected_cash_flows
-
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()

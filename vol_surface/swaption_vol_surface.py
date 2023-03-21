@@ -1,9 +1,8 @@
 from typing import List
 
+import numpy as np
 import pandas as pd
 from scipy.interpolate import griddata
-
-import numpy as np
 
 from utils.constants import BASIS_POINT_CONVERSION
 
@@ -30,7 +29,7 @@ class AtmSwaptionVolSurface:
         return cls(np.array(points), np.array(data))
 
     @classmethod
-    def from_csv (cls, path):
+    def from_csv(cls, path):
         df = pd.read_csv(path, index_col=0)
 
         split_df = df.to_dict('split')
@@ -53,7 +52,6 @@ class AtmSwaptionVolSurface:
         bump = n_bps_bump * BASIS_POINT_CONVERSION ** 2
 
         for i, point in enumerate(self._points):
-
             data = self._data.copy()
 
             data[i] += bump
