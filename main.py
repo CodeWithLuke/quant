@@ -7,7 +7,6 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
-import plotly.express as px
 
 from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
 
