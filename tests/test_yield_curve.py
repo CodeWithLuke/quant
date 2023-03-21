@@ -1,8 +1,13 @@
+from utils.enum import CashFlowFrequency
+from yield_curve.libor_curve import LiborCurve
 from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 
 from utils.constants import *
 
 import pytest
+
+from yield_curve.spot_rate_point import SpotRatePoint
+
 
 def test_yield_curve_construction():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
@@ -38,3 +43,37 @@ def test_discount_factor_calc():
     v = 100000 * (df_2 * 0.5 * 0.02 + df_2 - df_1)
 
     assert v == pytest.approx(-1254.8198358152129, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
+
+def test_forward_rate_calc():
+    spot_rates = {
+        0.5: 1.65, 1.0: 2.0, 2.0: 2.7, 3.0: 3.1, 5.0: 3.85, 7.0: 4.2, 10.0: 4.3
+    }
+
+    curve_points = []
+
+    for t, spot_rate in spot_rates.items():
+        curve_point = SpotRatePoint(t, spot_rate)
+
+        curve_points.append(curve_point)
+
+    curve = LiborCurve(curve_points)
+
+    t1 = 2
+
+    t2 = 5
+
+    s1 = curve.interpolate_curve(t1)
+
+    f_1_2 = curve.interpolate_forward_rate(t1, t2 - t1)
+
+    s2 = curve.interpolate_curve(t2)
+
+    payment_freq_to_test = (CashFlowFrequency.MONTHLY, CashFlowFrequency.ANNUAL, CashFlowFrequency.SEMI_ANNUAL)
+
+    for m in payment_freq_to_test:
+
+        lhs = ((1 + s1 / m) ** (m*t1)) * ((1 + f_1_2 / m) ** (m*(t2-t1)))
+
+        rhs = ((1 + s2 / m) ** (m*t2))
+
+        assert lhs == pytest.approx(rhs, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
