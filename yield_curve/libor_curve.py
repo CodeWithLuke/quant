@@ -76,4 +76,3 @@ class LiborCurve(AbsCurve):
     @property
     def market_quotes(self) -> Dict[CurveInstrument, Dict[float, float]]:
         return self._market_quotes
-
