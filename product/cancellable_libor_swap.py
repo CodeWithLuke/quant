@@ -9,8 +9,8 @@ from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libo
 class CancellableLiborSwap:
 
     def __init__(self, notional: float, swap_rate: float, termination_date: float, swap_tenor_years: float,
-                 swap_cash_flow_frequency: CashFlowFrequency=CashFlowFrequency.SEMI_ANNUAL,
-                 swap_payer_receiver: PayerReceiver=PayerReceiver.PAYER,
+                 swap_cash_flow_frequency: CashFlowFrequency = CashFlowFrequency.SEMI_ANNUAL,
+                 swap_payer_receiver: PayerReceiver = PayerReceiver.PAYER,
                  cancellation_payer_receiver: PayerReceiver = None):
 
         self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, swap_rate,
@@ -41,7 +41,7 @@ class CancellableLiborSwap:
 
     def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
         return self._underlying_swap.present_value(libor_curve) + self._offsetting_swaption.present_value(libor_curve,
-            swaption_vol_surface)
+                                                                                                          swaption_vol_surface)
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()

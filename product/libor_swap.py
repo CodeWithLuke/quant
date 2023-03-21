@@ -1,12 +1,10 @@
 from typing import List
 
+from product.swap_leg_cash_flow import SwapLegCashFlow
+from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegType
+from yield_curve.libor_curve import LiborCurve
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node, \
     bump_all_libor_curve_nodes
-
-from yield_curve.libor_curve import LiborCurve
-from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegType
-
-from product.swap_leg_cash_flow import SwapLegCashFlow
 
 
 class LiborSwap:
@@ -45,8 +43,6 @@ class LiborSwap:
                                        cash_flow_frequency)
 
         return cls(notional, maturity, cash_flow_frequency, swap_rate, payer_receiver, start_time)
-
-
 
     def present_value(self, libor_curve: LiborCurve):
         floating_leg_value = self._notional * (libor_curve.interpolate_discount_factor(self._start_time)
@@ -87,10 +83,9 @@ class LiborSwap:
 
         # floating leg
         for i in range(1, len(times_of_cash_flows)):
-
             t_i = times_of_cash_flows[i]
 
-            t_im1 = times_of_cash_flows[i-1]
+            t_im1 = times_of_cash_flows[i - 1]
 
             d_i = libor_curve.interpolate_discount_factor(t_i)
 
@@ -126,7 +121,6 @@ class LiborSwap:
 
         return times_of_cash_flows
 
-
     @staticmethod
     def _calc_par_rate(libor_curve: LiborCurve, times_of_cash_flows: List[float], maturity, start_time,
                        cash_flow_frequency: CashFlowFrequency):
@@ -137,7 +131,8 @@ class LiborSwap:
             [libor_curve.interpolate_discount_factor(t) for t in times_of_cash_flows]
         )
 
-        d_range = libor_curve.interpolate_discount_factor(start_time) - libor_curve.interpolate_discount_factor(end_time)
+        d_range = libor_curve.interpolate_discount_factor(start_time) - libor_curve.interpolate_discount_factor(
+            end_time)
 
         return cash_flow_frequency * d_range / discount_factor_sum
 
