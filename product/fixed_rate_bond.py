@@ -29,7 +29,7 @@ class FixedRateBond:
 
             ir_yield = libor_curve.interpolate_curve(t)
 
-            value += coupon_amount * self.coupon_period * exp(-1 * t * (ir_yield + applied_z_spread))
+            value += coupon_amount * exp(-1 * t * (ir_yield + applied_z_spread))
 
         return value
 
