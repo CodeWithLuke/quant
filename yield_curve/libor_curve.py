@@ -1,4 +1,5 @@
-from typing import List, Dict
+from dataclasses import asdict
+from typing import List, Dict, Union
 
 import numpy as np
 from scipy.interpolate import CubicSpline
@@ -7,12 +8,31 @@ from utils.enum import CurveInstrument, InterpolationType, InterestType
 from utils.utils import *
 from yield_curve.abs_curve import AbsCurve
 
+from yield_curve.spot_rate_point import SpotRatePoint
+
 
 class LiborCurve(AbsCurve):
 
-    def __init__(self, curve_points: List[Dict[str, float]], interpolation_type=InterpolationType.CUBIC_SPLINE,
+    def __init__(self, curve_points: Union[List[SpotRatePoint], List[Dict[str, float]]],
+                 interpolation_type=InterpolationType.LINEAR,
                  market_quotes: dict = None):
-        assert any('time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points)
+
+        is_curve_point_data_obj = any([isinstance(curve_point, SpotRatePoint) for curve_point in curve_points])
+
+        if is_curve_point_data_obj:
+            new_curve_points = []
+            for curve_point in curve_points:
+                if isinstance(curve_point, SpotRatePoint):
+                    spot_rate_dict = asdict(curve_point)
+                    if spot_rate_dict['spot_rate'] > 0.25:
+                        spot_rate_dict['spot_rate'] /= 100
+                    new_curve_points.append(spot_rate_dict)
+                else:
+                    new_curve_points.append(curve_point)
+
+            curve_points = new_curve_points
+
+        assert all(['time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points])
 
         self._market_quotes = market_quotes
 
@@ -31,7 +51,7 @@ class LiborCurve(AbsCurve):
 
         self._yield_curve_points = dict(zip(self._t, self._s))
 
-    def interpolate_curve(self, t):
+    def interpolate_curve(self, t) -> float:
         if self._interpolation_type == InterpolationType.LINEAR:
             s_interp = np.interp(t, self._t, self._s, right=np.nan, left=1)
             return s_interp
