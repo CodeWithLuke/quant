@@ -1,19 +1,21 @@
 from dataclasses import asdict
 from typing import List, Dict, Union
 
-from yield_curve.abs_curve import AbsCurve
+import numpy as np
+from scipy.interpolate import CubicSpline
+
 from utils.enum import CurveInstrument, InterpolationType, InterestType
 from utils.utils import *
-
-import numpy as np
-
-from scipy.interpolate import CubicSpline
+from yield_curve.abs_curve import AbsCurve
 
 from yield_curve.spot_rate_point import SpotRatePoint
 
 
 class LiborCurve(AbsCurve):
 
+    def __init__(self, curve_points: List[Dict[str, float]], interpolation_type=InterpolationType.CUBIC_SPLINE,
+                 market_quotes: dict = None):
+        assert any('time' in curve_point and 'spot_rate' in curve_point for curve_point in curve_points)
     def __init__(self, curve_points: Union[List[SpotRatePoint], List[Dict[str, float]]],
                  interpolation_type=InterpolationType.CUBIC_SPLINE,
                  market_quotes: dict = None):

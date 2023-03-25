@@ -1,4 +1,5 @@
 from typing import Dict
+
 from utils.utils import discount_to_spot_rate
 
 
@@ -10,7 +11,7 @@ class ShortLiborCurveBuilder:
 
     @staticmethod
     def libor_rate_to_discount(l, t):
-        return 1 / (1 + t*l/100)
+        return 1 / (1 + t * l / 100)
 
     def build_curve(self):
         curve = []

@@ -15,7 +15,9 @@ def test_swap_par_rate():
 
     par_swap = LiborSwap.par_swap(curve, 1, 2, CashFlowFrequency.QUARTERLY)
 
-    assert par_swap.swap_rate * 100 == pytest.approx(3.5829073672588927, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
+    assert par_swap.swap_rate * 100 == pytest.approx(3.5829073672588927, abs=UNIT_TEST_ABS_TOLERANCE,
+                                                     rel=UNIT_TEST_REL_TOLERANCE)
+
 
 def test_swap_valuation():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
@@ -26,4 +28,5 @@ def test_swap_valuation():
 
     swap = LiborSwap(1, 2, CashFlowFrequency.QUARTERLY, 0.03)
 
-    assert swap.present_value(curve) == pytest.approx(0.011248615516038618, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
+    assert swap.present_value(curve) == pytest.approx(0.011248615516038618, abs=UNIT_TEST_ABS_TOLERANCE,
+                                                      rel=UNIT_TEST_REL_TOLERANCE)
