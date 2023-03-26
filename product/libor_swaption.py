@@ -5,6 +5,7 @@ from scipy.stats import norm
 from product.libor_swap import LiborSwap
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
+from yield_curve.abs_curve import AbsCurve
 from yield_curve.libor_curve import LiborCurve
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 
@@ -36,7 +37,7 @@ class LiborSwaption:
         return cls(forward_swap.notional, forward_swap.swap_rate, forward_swap.start_time, forward_swap.maturity,
                    forward_swap.cash_flow_frequency, forward_swap.payer_receiver, long_short)
 
-    def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AbsSwaptionSurface):
+    def present_value(self, libor_curve: AbsCurve, swaption_vol_surface: AbsSwaptionSurface):
 
         s_0 = self._underlying_swap.par_rate(libor_curve)
 
