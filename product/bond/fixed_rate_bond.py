@@ -7,15 +7,11 @@ from yield_curve.libor_curve import LiborCurve
 
 
 class FixedRateBond:
-    def __init__(self, notional: float, maturity: float, coupon_frequency: CashFlowFrequency,
-                 coupon_rate: float = None):
+    def __init__(self, notional: float, maturity: float, coupon_frequency: CashFlowFrequency, coupon_rate: float):
         self.notional = notional
         self.maturity = maturity
-        self._has_coupons = coupon_frequency is not None and not coupon_frequency == CashFlowFrequency.NONE
-        if self._has_coupons:
-            assert coupon_rate is not None
-        self.coupon_frequency = coupon_frequency
         self.coupon_period = 1 / int(coupon_frequency)
+        self.coupon_frequency = coupon_frequency
         self.coupon_rate = coupon_rate
         self.num_coupon_payments = int(int(coupon_frequency) * maturity)
 
@@ -47,14 +43,19 @@ class FixedRateBond:
 
         return newton(_f, 0.0)
 
-    def get_par_yield(self, yield_rate: float):
+    def par_rate_from_yield(self, yield_rate: float):
+        '''
+        Gets coupon rate that makes the bond price the par value
+        :param yield_rate:
+        :return:
+        '''
         annuity = sum(
             [exp(-i * self.coupon_period * yield_rate) for i in range(1, self.num_coupon_payments + 1)]
         )
 
         return (1 - exp(-1 * self.maturity * yield_rate)) * self.maturity / annuity
 
-    def get_bond_duration_from_yield(self, yield_rate: float):
+    def duration_from_yield(self, yield_rate: float):
         coupon_amount = self.notional * self.coupon_rate * self.coupon_period
 
         coupon_time_weighted_present_value_sum = sum([
