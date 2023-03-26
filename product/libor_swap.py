@@ -19,8 +19,6 @@ class LiborSwap:
 
         self._end_time = start_time + self._maturity
 
-        assert cash_flow_frequency is not None and not cash_flow_frequency == CashFlowFrequency.NONE
-
         self._interest_type = InterestType.CONTINUOUS
 
         self._cash_flow_frequency = cash_flow_frequency
