@@ -30,3 +30,16 @@ def test_swap_valuation():
 
     assert swap.present_value(curve) == pytest.approx(0.011248615516038618, abs=UNIT_TEST_ABS_TOLERANCE,
                                                       rel=UNIT_TEST_REL_TOLERANCE)
+
+def test_swap_delta_risk():
+    deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
+    futures = {6 / 12: 97.4, 9 / 12: 97.0}
+    swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
+    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
+    curve = fcb.curve()
+
+    swap = LiborSwap(10000, 2, CashFlowFrequency.QUARTERLY, 0.03)
+
+    report = swap.first_order_curve_risk(curve)
+
+    assert report['IR_SWAP_2Y'] == pytest.approx(1.90489)

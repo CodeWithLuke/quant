@@ -4,6 +4,7 @@ from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency, PayerReceiver
 from yield_curve.flat_curve import FlatCurve
 from yield_curve.libor_curve import LiborCurve
+from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 from yield_curve.spot_rate_point import SpotRatePoint
 from vol_surface.swaption_vol_surface.swaption_flat_surface import SwaptionFlatVolSurface
 from product.libor_swaption import LiborSwaption
@@ -15,8 +16,22 @@ def test_swaption_present_value():
 
     vol = SwaptionFlatVolSurface(0.2)
 
-    swpn = LiborSwaption(100, 0.062, 5, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
+    swaption_obj = LiborSwaption(100, 0.062, 5, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
 
-    assert swpn.present_value(curve,vol) == pytest.approx(
+    assert swaption_obj.present_value(curve,vol) == pytest.approx(
         2.07, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
 
+def test_swaption_delta_risk():
+    deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
+    futures = {6 / 12: 97.4, 9 / 12: 97.0}
+    swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2, 5.0: 4.4}
+    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
+    curve = fcb.curve()
+
+    vol = SwaptionFlatVolSurface(0.2)
+
+    swaption_obj = LiborSwaption(10000, 0.062, 1, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
+
+    report = swaption_obj.first_order_curve_risk(curve, vol)
+
+    assert report["IR_SWAP_1Y"] == pytest.approx(-0.08625383967139122) and report["IR_SWAP_4Y"] == pytest.approx(0.32758424778292294)
