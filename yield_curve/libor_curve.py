@@ -73,13 +73,13 @@ class LiborCurve(AbsCurve):
         else:
             raise ValueError
 
-    def interpolate_forward_rate(self, t, term=1, compounding=InterestType.CONTINUOUS):
+    def interpolate_forward_rate(self, t, term=1):
         t_a = t
         t_b = t + term
 
-        d_a = self.interpolate_discount_factor(t_a, compounding)
+        d_a = self.interpolate_discount_factor(t_a, compounding=InterestType.CONTINUOUS)
 
-        d_b = self.interpolate_discount_factor(t_b, compounding)
+        d_b = self.interpolate_discount_factor(t_b, compounding=InterestType.CONTINUOUS)
 
         return -1 * log(d_b / d_a) / term
 

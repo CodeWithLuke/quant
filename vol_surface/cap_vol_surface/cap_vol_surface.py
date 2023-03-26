@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
 
+from vol_surface.cap_vol_surface.abs_cap_surface import AbsCapSurface
 
-class CapVolSurface:
+
+class CapVolSurface (AbsCapSurface):
 
     def __init__(self, expiries, vols):
         self._t = np.array(expiries)

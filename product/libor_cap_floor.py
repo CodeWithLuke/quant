@@ -4,7 +4,8 @@ from scipy.stats import norm
 
 from product.libor_swap import LiborSwap
 from utils.enum import CapFloor, LongShort, CashFlowFrequency
-from vol_surface.cap_vol_surface import CapVolSurface
+from vol_surface.cap_vol_surface.abs_cap_surface import AbsCapSurface
+from yield_curve.abs_curve import AbsCurve
 from yield_curve.libor_curve import LiborCurve
 
 
@@ -55,7 +56,7 @@ class Cap:
         return Caplet(notional=self._notional, strike_rate=self._strike_rate, reset_date=reset_date,
                       payoff_date=payoff_date, cap_floor=self._cap_floor, long_short=self._long_short)
 
-    def present_value(self, libor_curve: LiborCurve, vol_surface: CapVolSurface):
+    def present_value(self, libor_curve: LiborCurve, vol_surface: AbsCapSurface):
 
         volatility = vol_surface.interpolate_vol(self._maturity)
 
@@ -93,7 +94,7 @@ class Caplet:
 
         self._long_short = long_short
 
-    def present_value(self, libor_curve: LiborCurve, volatility: float):
+    def present_value(self, libor_curve: AbsCurve, volatility: float):
         forward_rate = libor_curve.interpolate_forward_rate(self._reset_date, self._period)
 
         notional_product = self._notional * self._period * libor_curve.interpolate_discount_factor(self._payoff_date)
