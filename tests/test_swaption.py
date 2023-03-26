@@ -1,3 +1,6 @@
+import pytest
+
+from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency, PayerReceiver
 from yield_curve.libor_curve import LiborCurve
 from yield_curve.spot_rate_point import SpotRatePoint
@@ -23,5 +26,6 @@ def test_swaption_present_value():
 
     swpn = LiborSwaption(100, 0.062, 5, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
 
-    print(swpn.present_value(curve,vol))
+    assert swpn.present_value(curve,vol) == pytest.approx(
+        2.07, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
 
