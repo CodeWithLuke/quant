@@ -4,7 +4,7 @@ from scipy.stats import norm
 
 from product.libor_swap import LiborSwap
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
-from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
+from vol_surface.swaption_vol_surface.atm_swaption_vol_surface import AtmSwaptionVolSurface
 from yield_curve.libor_curve import LiborCurve
 from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 
