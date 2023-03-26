@@ -6,5 +6,5 @@ class CapConstVolSurface(AbsCapSurface):
     def __init__(self, vol):
         self._vol = vol
 
-    def interpolate_vol(self, expiry, tenor):
+    def interpolate_vol(self, expiry):
         return self._vol

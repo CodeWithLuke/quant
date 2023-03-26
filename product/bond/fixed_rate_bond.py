@@ -44,11 +44,11 @@ class FixedRateBond:
         return newton(_f, 0.0)
 
     def par_rate_from_yield(self, yield_rate: float):
-        '''
+        """
         Gets coupon rate that makes the bond price the par value
         :param yield_rate:
         :return:
-        '''
+        """
         annuity = sum(
             [exp(-i * self.coupon_period * yield_rate) for i in range(1, self.num_coupon_payments + 1)]
         )

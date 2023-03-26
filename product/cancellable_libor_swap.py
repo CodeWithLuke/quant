@@ -1,10 +1,8 @@
 from product.libor_swap import LiborSwap
 from product.libor_swaption import LiborSwaption
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
-from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
+from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
 from yield_curve.libor_curve import LiborCurve
-from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
-
 
 class CancellableLiborSwap:
 
@@ -39,14 +37,14 @@ class CancellableLiborSwap:
 
         self._termination_date = termination_date
 
-    def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
+    def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AbsSwaptionSurface):
         return self._underlying_swap.present_value(libor_curve) + self._offsetting_swaption.present_value(libor_curve,
                                                                                                           swaption_vol_surface)
 
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()
 
-        bumped_curve_map = bump_libor_curve_by_node(libor_curve)
+        bumped_curve_map = libor_curve.bump_curve_by_instrument()
 
         npv = self.present_value(libor_curve, swaption_vol_surface)
 
@@ -59,7 +57,7 @@ class CancellableLiborSwap:
 
         npv_1_map = dict()
 
-        bumped_1_curve_map = bump_libor_curve_by_node(libor_curve)
+        bumped_1_curve_map = libor_curve.bump_curve_by_instrument(n_bps_bump=1)
 
         npv_0 = self.present_value(libor_curve, swaption_vol_surface)
 
@@ -68,7 +66,7 @@ class CancellableLiborSwap:
 
         npv_2_map = dict()
 
-        bumped_2_curve_map = bump_libor_curve_by_node(libor_curve, n_bps_bump=2)
+        bumped_2_curve_map = libor_curve.bump_curve_by_instrument(n_bps_bump=2)
 
         for node, bumped_curve in bumped_2_curve_map.items():
             npv_2_map[node] = self.present_value(bumped_curve, swaption_vol_surface)
@@ -83,7 +81,7 @@ class CancellableLiborSwap:
 
         return gamma_map
 
-    def surface_vega_risk(self, libor_curve, swaption_vol_surface: AtmSwaptionVolSurface):
+    def surface_vega_risk(self, libor_curve, swaption_vol_surface: AbsSwaptionSurface):
 
         npv_map = dict()
 

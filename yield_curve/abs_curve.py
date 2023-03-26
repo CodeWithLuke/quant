@@ -14,6 +14,14 @@ class AbsCurve(ABC):
     def interpolate_discount_factor(self, t, compounding=InterestType.CONTINUOUS):
         pass
 
+    @abstractmethod
+    def bump_curve_by_instrument(self, n_bps_bump=1):
+        pass
+
+    @abstractmethod
+    def parallel_bump_curve(self, n_bps_bump=1):
+        pass
+
     def interpolate_forward_rate(self, t, term=1):
         t_a = t
         t_b = t + term

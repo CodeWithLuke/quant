@@ -3,15 +3,14 @@ import pytest
 from product.libor_swap import LiborSwap
 from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency
-from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
+from yield_curve.libor_curve import LiborCurve
 
 
 def test_swap_par_rate():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     par_swap = LiborSwap.par_swap(curve, 1, 2, CashFlowFrequency.QUARTERLY)
 
@@ -23,8 +22,7 @@ def test_swap_valuation():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     swap = LiborSwap(1, 2, CashFlowFrequency.QUARTERLY, 0.03)
 
@@ -35,8 +33,7 @@ def test_swap_delta_risk():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     swap = LiborSwap(10000, 2, CashFlowFrequency.QUARTERLY, 0.03)
 

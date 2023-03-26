@@ -2,7 +2,6 @@ from math import exp
 
 from scipy.optimize import newton
 
-from utils.enum import CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
 
 

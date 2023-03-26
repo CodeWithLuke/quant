@@ -4,8 +4,6 @@ from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency, PayerReceiver
 from yield_curve.flat_curve import FlatCurve
 from yield_curve.libor_curve import LiborCurve
-from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
-from yield_curve.spot_rate_point import SpotRatePoint
 from vol_surface.swaption_vol_surface.swaption_flat_surface import SwaptionFlatVolSurface
 from product.libor_swaption import LiborSwaption
 
@@ -25,8 +23,7 @@ def test_swaption_delta_risk():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2, 5.0: 4.4}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     vol = SwaptionFlatVolSurface(0.2)
 

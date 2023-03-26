@@ -8,6 +8,12 @@ class FlatCurve(AbsCurve):
     def __init__(self, spot_rate: float):
         self._spot_rate = spot_rate
 
+    def bump_curve_by_instrument(self, n_bps_bump=1):
+        raise NotImplementedError
+
+    def parallel_bump_curve(self, n_bps_bump=1):
+        raise NotImplementedError
+
     def interpolate_curve(self, t):
         return self._spot_rate
 
