@@ -1,6 +1,7 @@
 import pytest
 
-from product.fixed_rate_bond import FixedRateBond
+from product.bond.fixed_rate_bond import FixedRateBond
+from product.bond.zero_coupon_bond import ZeroCouponBond
 from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency
 from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
@@ -15,4 +16,24 @@ def test_bond_priced_from_curve():
 
     test_bond = FixedRateBond(10000, 2, CashFlowFrequency.SEMI_ANNUAL, coupon_rate=0.07)
 
-    assert test_bond.present_value(curve) == 10652.994335330433
+    assert test_bond.present_value(curve) == pytest.approx(
+        10653, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
+
+
+def test_bond_price_to_yield_zero_coupon():
+    price = 9910
+
+    test_bond = ZeroCouponBond(10000, 0.5)
+
+    yield_rate = test_bond.price_to_yield(price)
+
+    assert yield_rate == pytest.approx(0.01808, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
+
+def test_bond_price_to_yield_fixed_rate():
+    price = 98000
+
+    test_bond = FixedRateBond(100000, 2.5, CashFlowFrequency.SEMI_ANNUAL, 0.07)
+
+    yield_rate = test_bond.price_to_yield(price)
+
+    assert yield_rate == pytest.approx(0.07813, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
