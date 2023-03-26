@@ -66,10 +66,6 @@ class LiborCurve(AbsCurve):
         if compounding == InterestType.CONTINUOUS:
             return spot_rate_to_discount(self.interpolate_curve(t), t)
 
-        elif compounding == InterestType.SIMPLE:
-            r = self.interpolate_curve(t)
-            return 1 / (1 + r * t)
-
         else:
             raise ValueError
 
