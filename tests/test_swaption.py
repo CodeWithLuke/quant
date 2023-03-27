@@ -5,7 +5,7 @@ from utils.enum import CashFlowFrequency, PayerReceiver
 from yield_curve.flat_curve import FlatCurve
 from yield_curve.libor_curve import LiborCurve
 from vol_surface.swaption_vol_surface.swaption_flat_surface import SwaptionFlatVolSurface
-from product.libor_swaption import LiborSwaption
+from product.interest_rate_swaption import InterestRateSwaption
 
 
 def test_swaption_present_value():
@@ -14,7 +14,7 @@ def test_swaption_present_value():
 
     vol = SwaptionFlatVolSurface(0.2)
 
-    swaption_obj = LiborSwaption(100, 0.062, 5, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
+    swaption_obj = InterestRateSwaption(100, 0.062, 5, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
 
     assert swaption_obj.present_value(curve,vol) == pytest.approx(
         2.07, abs=UNIT_TEST_ABS_TOLERANCE, rel=UNIT_TEST_REL_TOLERANCE)
@@ -27,7 +27,7 @@ def test_swaption_delta_risk():
 
     vol = SwaptionFlatVolSurface(0.2)
 
-    swaption_obj = LiborSwaption(10000, 0.062, 1, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
+    swaption_obj = InterestRateSwaption(10000, 0.062, 1, 3, CashFlowFrequency.SEMI_ANNUAL, swap_payer_receiver=PayerReceiver.PAYER)
 
     report = swaption_obj.first_order_curve_risk(curve, vol)
 

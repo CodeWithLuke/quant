@@ -2,7 +2,7 @@ from math import log, sqrt
 
 from scipy.stats import norm
 
-from product.libor_swap import LiborSwap
+from product.interest_rate_swap import InterestRateSwap
 from utils.enum import CapFloor, LongShort, CashFlowFrequency
 from vol_surface.cap_vol_surface.abs_cap_surface import AbsCapSurface
 from yield_curve.abs_curve import AbsCurve
@@ -71,8 +71,8 @@ class Cap:
     def _calc_par_rate(notional: float, maturity: float, libor_curve: LiborCurve, payment_frequency: CashFlowFrequency):
         assert round(12 * maturity) % payment_frequency == 0, maturity
         swap_start = 1 / payment_frequency
-        par_swap = LiborSwap.par_swap(libor_curve, notional, maturity - swap_start, payment_frequency,
-                                      start_time=swap_start)
+        par_swap = InterestRateSwap.par_swap(libor_curve, notional, maturity - swap_start, payment_frequency,
+                                             start_time=swap_start)
         return par_swap.swap_rate
 
 

@@ -2,21 +2,21 @@ from math import log, sqrt
 
 from scipy.stats import norm
 
-from product.libor_swap import LiborSwap
+from product.interest_rate_swap import InterestRateSwap
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
 from yield_curve.abs_curve import AbsCurve
 from yield_curve.libor_curve import LiborCurve
 
 
-class LiborSwaption:
+class InterestRateSwaption:
 
     def __init__(self, notional: float, strike: float, swaption_expiry: float, swap_tenor_years: float,
                  swap_cash_flow_frequency: CashFlowFrequency, swap_payer_receiver: PayerReceiver,
                  long_short: LongShort = LongShort.LONG):
 
-        self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
-                                          swap_payer_receiver, swaption_expiry)
+        self._underlying_swap = InterestRateSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
+                                                 swap_payer_receiver, swaption_expiry)
 
         self._swaption_expiry = self._underlying_swap.start_time
 
@@ -31,7 +31,7 @@ class LiborSwaption:
         self._long_short = long_short
 
     @classmethod
-    def from_forward_swap(cls, forward_swap: LiborSwap, long_short: LongShort = LongShort.LONG):
+    def from_forward_swap(cls, forward_swap: InterestRateSwap, long_short: LongShort = LongShort.LONG):
 
         return cls(forward_swap.notional, forward_swap.swap_rate, forward_swap.start_time, forward_swap.maturity,
                    forward_swap.cash_flow_frequency, forward_swap.payer_receiver, long_short)

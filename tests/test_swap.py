@@ -1,6 +1,6 @@
 import pytest
 
-from product.libor_swap import LiborSwap
+from product.interest_rate_swap import InterestRateSwap
 from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from utils.enum import CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
@@ -12,7 +12,7 @@ def test_swap_par_rate():
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
     curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
-    par_swap = LiborSwap.par_swap(curve, 1, 2, CashFlowFrequency.QUARTERLY)
+    par_swap = InterestRateSwap.par_swap(curve, 1, 2, CashFlowFrequency.QUARTERLY)
 
     assert par_swap.swap_rate * 100 == pytest.approx(3.5829073672588927, abs=UNIT_TEST_ABS_TOLERANCE,
                                                      rel=UNIT_TEST_REL_TOLERANCE)
@@ -24,7 +24,7 @@ def test_swap_valuation():
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
     curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
-    swap = LiborSwap(1, 2, CashFlowFrequency.QUARTERLY, 0.03)
+    swap = InterestRateSwap(1, 2, CashFlowFrequency.QUARTERLY, 0.03)
 
     assert swap.present_value(curve) == pytest.approx(0.011248615516038618, abs=UNIT_TEST_ABS_TOLERANCE,
                                                       rel=UNIT_TEST_REL_TOLERANCE)
@@ -35,7 +35,7 @@ def test_swap_delta_risk():
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
     curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
-    swap = LiborSwap(10000, 2, CashFlowFrequency.QUARTERLY, 0.03)
+    swap = InterestRateSwap(10000, 2, CashFlowFrequency.QUARTERLY, 0.03)
 
     report = swap.first_order_curve_risk(curve)
 

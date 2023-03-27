@@ -1,6 +1,6 @@
 import pytest
 
-from product.libor_cap_floor import Caplet
+from product.cap_floor import Caplet
 from utils.constants import UNIT_TEST_ABS_TOLERANCE, UNIT_TEST_REL_TOLERANCE
 from yield_curve.flat_curve import FlatCurve
 

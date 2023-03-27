@@ -1,18 +1,18 @@
-from product.libor_swap import LiborSwap
-from product.libor_swaption import LiborSwaption
+from product.interest_rate_swap import InterestRateSwap
+from product.interest_rate_swaption import InterestRateSwaption
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
 from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
 from yield_curve.libor_curve import LiborCurve
 
-class CancellableLiborSwap:
+class CancellableSwap:
 
     def __init__(self, notional: float, swap_rate: float, termination_date: float, swap_tenor_years: float,
                  swap_cash_flow_frequency: CashFlowFrequency = CashFlowFrequency.SEMI_ANNUAL,
                  swap_payer_receiver: PayerReceiver = PayerReceiver.PAYER,
                  cancellation_payer_receiver: PayerReceiver = None):
 
-        self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, swap_rate,
-                                          swap_payer_receiver)
+        self._underlying_swap = InterestRateSwap(notional, swap_tenor_years, swap_cash_flow_frequency, swap_rate,
+                                                 swap_payer_receiver)
 
         offsetting_swaption_tenor = swap_tenor_years - termination_date
 
@@ -30,7 +30,7 @@ class CancellableLiborSwap:
         else:
             offsetting_swaption_long_short = LongShort.SHORT
 
-        self._offsetting_swaption = LiborSwaption(
+        self._offsetting_swaption = InterestRateSwaption(
             notional, swap_rate, termination_date, offsetting_swaption_tenor, swap_cash_flow_frequency,
             offsetting_swaption_payer_receiver, long_short=offsetting_swaption_long_short
         )

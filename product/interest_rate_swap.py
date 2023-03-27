@@ -5,7 +5,7 @@ from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegTy
 from yield_curve.abs_curve import AbsCurve
 
 
-class LiborSwap:
+class InterestRateSwap:
 
     def __init__(self, notional: float, maturity: float, cash_flow_frequency: CashFlowFrequency, swap_rate: float,
                  payer_receiver=PayerReceiver.PAYER, start_time: float = 0.):
