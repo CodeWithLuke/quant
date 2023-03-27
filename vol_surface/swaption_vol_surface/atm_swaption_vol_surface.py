@@ -5,9 +5,10 @@ import pandas as pd
 from scipy.interpolate import griddata
 
 from utils.constants import BASIS_POINT_CONVERSION
+from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
 
 
-class AtmSwaptionVolSurface:
+class AtmSwaptionVolSurface(AbsSwaptionSurface):
 
     def __init__(self, points: np.array, data: np.array):
 

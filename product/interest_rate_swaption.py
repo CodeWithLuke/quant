@@ -2,21 +2,21 @@ from math import log, sqrt
 
 from scipy.stats import norm
 
-from product.libor_swap import LiborSwap
+from product.interest_rate_swap import InterestRateSwap
 from utils.enum import CashFlowFrequency, PayerReceiver, LongShort
-from vol_surface.swaption_vol_surface import AtmSwaptionVolSurface
+from vol_surface.swaption_vol_surface.abs_swaption_surface import AbsSwaptionSurface
+from yield_curve.abs_curve import AbsCurve
 from yield_curve.libor_curve import LiborCurve
-from yield_curve.libor_curve_builder.libor_bumped_curve_builder import bump_libor_curve_by_node
 
 
-class LiborSwaption:
+class InterestRateSwaption:
 
     def __init__(self, notional: float, strike: float, swaption_expiry: float, swap_tenor_years: float,
                  swap_cash_flow_frequency: CashFlowFrequency, swap_payer_receiver: PayerReceiver,
                  long_short: LongShort = LongShort.LONG):
 
-        self._underlying_swap = LiborSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
-                                          swap_payer_receiver, swaption_expiry)
+        self._underlying_swap = InterestRateSwap(notional, swap_tenor_years, swap_cash_flow_frequency, strike,
+                                                 swap_payer_receiver, swaption_expiry)
 
         self._swaption_expiry = self._underlying_swap.start_time
 
@@ -31,12 +31,12 @@ class LiborSwaption:
         self._long_short = long_short
 
     @classmethod
-    def from_forward_swap(cls, forward_swap: LiborSwap, long_short: LongShort = LongShort.LONG):
+    def from_forward_swap(cls, forward_swap: InterestRateSwap, long_short: LongShort = LongShort.LONG):
 
         return cls(forward_swap.notional, forward_swap.swap_rate, forward_swap.start_time, forward_swap.maturity,
                    forward_swap.cash_flow_frequency, forward_swap.payer_receiver, long_short)
 
-    def present_value(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
+    def present_value(self, libor_curve: AbsCurve, swaption_vol_surface: AbsSwaptionSurface):
 
         s_0 = self._underlying_swap.par_rate(libor_curve)
 
@@ -57,7 +57,7 @@ class LiborSwaption:
 
         return l * a * (s_0 * norm.cdf(d_1 * self._payer_receiver) - s_k * norm.cdf(d_2 * self._payer_receiver))
 
-    def cash_flow_report(self, libor_curve: LiborCurve, swaption_vol_surface: AtmSwaptionVolSurface):
+    def cash_flow_report(self, libor_curve: LiborCurve, swaption_vol_surface: AbsSwaptionSurface):
 
         s_0 = self._underlying_swap.par_rate(libor_curve)
 
@@ -88,7 +88,7 @@ class LiborSwaption:
     def first_order_curve_risk(self, libor_curve: LiborCurve, swaption_vol_surface):
         risk_map = dict()
 
-        bumped_curve_map = bump_libor_curve_by_node(libor_curve)
+        bumped_curve_map = libor_curve.bump_curve_by_instrument()
 
         npv = self.present_value(libor_curve, swaption_vol_surface)
 
@@ -101,7 +101,7 @@ class LiborSwaption:
 
         npv_1_map = dict()
 
-        bumped_1_curve_map = bump_libor_curve_by_node(libor_curve)
+        bumped_1_curve_map = libor_curve.bump_curve_by_instrument(n_bps_bump=1)
 
         npv_0 = self.present_value(libor_curve, swaption_vol_surface)
 
@@ -110,7 +110,7 @@ class LiborSwaption:
 
         npv_2_map = dict()
 
-        bumped_2_curve_map = bump_libor_curve_by_node(libor_curve, n_bps_bump=2)
+        bumped_2_curve_map = libor_curve.bump_curve_by_instrument(n_bps_bump=2)
 
         for node, bumped_curve in bumped_2_curve_map.items():
             npv_2_map[node] = self.present_value(bumped_curve, swaption_vol_surface)
@@ -125,7 +125,7 @@ class LiborSwaption:
 
         return gamma_map
 
-    def surface_vega_risk(self, libor_curve, swaption_vol_surface: AtmSwaptionVolSurface):
+    def surface_vega_risk(self, libor_curve, swaption_vol_surface: AbsSwaptionSurface):
 
         npv_map = dict()
 

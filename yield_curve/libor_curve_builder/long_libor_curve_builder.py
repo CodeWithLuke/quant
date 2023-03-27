@@ -4,7 +4,6 @@ import numpy as np
 
 from utils.constants import FLOAT_EQ_THRESHOLD
 from utils.utils import spot_rate_to_discount, discount_to_spot_rate
-from yield_curve.libor_curve import LiborCurve
 
 
 class LongLiborCurveBuilder:
@@ -20,18 +19,27 @@ class LongLiborCurveBuilder:
 
         self._s = np.array(list(swap_quotes.values()))
 
-        previous_libor_curve = LiborCurve(previous_libor_data_points)
+        previous_points_t = []
+        previous_points_s = []
+        for point in previous_libor_data_points:
+            previous_points_t.append(point['time'])
+            previous_points_s.append(point['spot_rate'])
+
+        previous_points_t = np.array(previous_points_t)
+        previous_points_s = np.array(previous_points_s)
 
         self._discount_factors_sum = 0
 
         self._iter_t = 0.5
 
-        discount_factor = spot_rate_to_discount(previous_libor_curve[self._iter_t], self._iter_t)
+        discount_factor = spot_rate_to_discount(
+            np.interp(self._iter_t, previous_points_t, previous_points_s, right=np.nan, left=0), self._iter_t)
 
         while not np.isnan(discount_factor):
             self._discount_factors_sum += discount_factor
             self._iter_t += 0.5
-            discount_factor = spot_rate_to_discount(previous_libor_curve[self._iter_t], self._iter_t)
+            discount_factor = spot_rate_to_discount(
+                np.interp(self._iter_t, previous_points_t, previous_points_s, right=np.nan, left=1), self._iter_t)
 
         self.curve = self.build_curve()
 

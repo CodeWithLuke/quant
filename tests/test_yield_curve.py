@@ -3,7 +3,6 @@ import pytest
 from utils.constants import *
 from utils.enum import CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
-from yield_curve.libor_curve_builder.libor_curve_builder import LiborCurveBuilder
 from yield_curve.spot_rate_point import SpotRatePoint
 
 
@@ -11,8 +10,7 @@ def test_yield_curve_construction():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     expected_rates = [1.9996154832063695,
                       2.197985794764072,
@@ -35,8 +33,7 @@ def test_discount_factor_calc():
     deposits = {1 / 52: 2.0, 1 / 12: 2.2, 1 / 6: 2.27, 1 / 4: 2.36}
     futures = {6 / 12: 97.4, 9 / 12: 97.0}
     swap_rate = {1.0: 3.0, 2.0: 3.6, 3.0: 3.95, 4.0: 4.2}
-    fcb = LiborCurveBuilder(deposits, futures, swap_rate)
-    curve = fcb.curve()
+    curve = LiborCurve.from_market_quotes(deposits, futures, swap_rate)
 
     df_1 = curve.interpolate_discount_factor(3.0)
     df_2 = curve.interpolate_discount_factor(3.5)
