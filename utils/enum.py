@@ -19,7 +19,7 @@ class InterpolationType(Enum):
     CUBIC_SPLINE = 2
 
 
-class InterestType(Enum):
+class CompoundingType(Enum):
     SIMPLE = 1
     CONTINUOUS = 2
 
