@@ -6,7 +6,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 
 from utils.constants import BASIS_POINT_CONVERSION
-from utils.enum import CurveInstrument, InterpolationType, InterestType
+from utils.enum import CurveInstrument, InterpolationType, CompoundingType
 from utils.utils import *
 from yield_curve.abs_curve import AbsCurve
 from yield_curve.libor_curve_builder.long_libor_curve_builder import LongLiborCurveBuilder
@@ -101,8 +101,8 @@ class LiborCurve(AbsCurve):
         else:
             raise ValueError
 
-    def interpolate_discount_factor(self, t, compounding=InterestType.CONTINUOUS):
-        if compounding == InterestType.CONTINUOUS:
+    def interpolate_discount_factor(self, t, compounding=CompoundingType.CONTINUOUS):
+        if compounding == CompoundingType.CONTINUOUS:
             return spot_rate_to_discount(self.interpolate_curve(t), t)
 
         else:
@@ -112,9 +112,9 @@ class LiborCurve(AbsCurve):
         t_a = t
         t_b = t + term
 
-        d_a = self.interpolate_discount_factor(t_a, compounding=InterestType.CONTINUOUS)
+        d_a = self.interpolate_discount_factor(t_a, compounding=CompoundingType.CONTINUOUS)
 
-        d_b = self.interpolate_discount_factor(t_b, compounding=InterestType.CONTINUOUS)
+        d_b = self.interpolate_discount_factor(t_b, compounding=CompoundingType.CONTINUOUS)
 
         return -1 * log(d_b / d_a) / term
 

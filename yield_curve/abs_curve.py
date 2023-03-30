@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from math import log
 
-from utils.enum import InterestType
+from utils.enum import CompoundingType
 
 
 class AbsCurve(ABC):
@@ -11,7 +11,7 @@ class AbsCurve(ABC):
         pass
 
     @abstractmethod
-    def interpolate_discount_factor(self, t, compounding=InterestType.CONTINUOUS):
+    def interpolate_discount_factor(self, t, compounding=CompoundingType.CONTINUOUS):
         pass
 
     @abstractmethod
@@ -26,8 +26,8 @@ class AbsCurve(ABC):
         t_a = t
         t_b = t + term
 
-        d_a = self.interpolate_discount_factor(t_a, compounding=InterestType.CONTINUOUS)
+        d_a = self.interpolate_discount_factor(t_a, compounding=CompoundingType.CONTINUOUS)
 
-        d_b = self.interpolate_discount_factor(t_b, compounding=InterestType.CONTINUOUS)
+        d_b = self.interpolate_discount_factor(t_b, compounding=CompoundingType.CONTINUOUS)
 
         return -1 * log(d_b / d_a) / term

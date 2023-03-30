@@ -1,6 +1,6 @@
 from typing import List
 
-from utils.enum import CashFlowFrequency, InterestType, PayerReceiver, SwapLegType
+from utils.enum import CashFlowFrequency, CompoundingType, PayerReceiver, SwapLegType
 from yield_curve.abs_curve import AbsCurve
 from dataclasses import dataclass
 
@@ -16,7 +16,7 @@ class InterestRateSwap:
 
         self._end_time = start_time + self._maturity
 
-        self._interest_type = InterestType.CONTINUOUS
+        self._interest_type = CompoundingType.CONTINUOUS
 
         self._cash_flow_frequency = cash_flow_frequency
 

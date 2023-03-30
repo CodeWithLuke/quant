@@ -1,4 +1,4 @@
-from utils.enum import InterestType
+from utils.enum import CompoundingType
 from utils.utils import spot_rate_to_discount
 from yield_curve.abs_curve import AbsCurve
 
@@ -17,5 +17,5 @@ class FlatCurve(AbsCurve):
     def interpolate_curve(self, t):
         return self._spot_rate
 
-    def interpolate_discount_factor(self, t, compounding=InterestType.CONTINUOUS):
+    def interpolate_discount_factor(self, t, compounding=CompoundingType.CONTINUOUS):
         return spot_rate_to_discount(self._spot_rate, t)
