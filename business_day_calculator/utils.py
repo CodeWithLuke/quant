@@ -1,6 +1,8 @@
 from datetime import date, timedelta
 from holidays import financial_holidays, country_holidays
 from utils.constants import WEEKEND_INDICES
+from utils.enum import DayCountConventions
+
 
 def get_num_business_days (end_date: date, base_date: date = date.today(), region: str = 'NYSE'):
     try:
@@ -22,3 +24,7 @@ def _date_range(base_date: date, end_date:date):
 
 def _is_business_day (base_date: date, loaded_holidays):
     return not (base_date.weekday() in WEEKEND_INDICES or base_date in loaded_holidays)
+
+def day_count_fraction (base_date: date, end_date:date, day_count_convention: DayCountConventions, region: str = 'NYSE'):
+
+

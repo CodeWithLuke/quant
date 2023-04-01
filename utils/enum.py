@@ -48,3 +48,9 @@ class SwapLegType(Enum):
 class CapFloor(IntEnum):
     CAP = 1
     FLOOR = -1
+
+
+class DayCountConventions(Enum):
+    DCC_ACTUAL_ACTUAL = 0
+    DCC_30_360 = 1
+    DCC_ACTUAL_365 = 2
