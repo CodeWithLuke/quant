@@ -1,4 +1,4 @@
-from enum import IntEnum, Enum
+from enum import IntEnum, StrEnum, Enum
 
 
 class CashFlowFrequency(IntEnum):
@@ -50,7 +50,17 @@ class CapFloor(IntEnum):
     FLOOR = -1
 
 
-class DayCountConventions(Enum):
+class DayCountConvention(Enum):
     DCC_ACTUAL_ACTUAL = 0
     DCC_30_360 = 1
     DCC_ACTUAL_365 = 2
+
+class TenorUnit(StrEnum):
+    YEAR = 'Y'
+    MONTH = 'M'
+    DAY = 'D'
+    WEEK = 'W'
+
+class DateRollingConvention(Enum):
+    MODIFIED_FOLLOWING = 0
+    PREVIOUS = 1
