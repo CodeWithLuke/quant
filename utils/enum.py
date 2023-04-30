@@ -64,3 +64,4 @@ class TenorUnit(StrEnum):
 class DateRollingConvention(Enum):
     MODIFIED_FOLLOWING = 0
     PREVIOUS = 1
+    FOLLOWING = 2

@@ -35,17 +35,18 @@ class Tenor:
         return cls(tenor_value, tenor_unit)
 
 def roll_date(base_date: date, holiday_region: str = 'NYSE',
-              rolling_convention: DateRollingConvention = DateRollingConvention.MODIFIED_FOLLOWING) -> date:
+              rolling_convention: DateRollingConvention = DateRollingConvention.FOLLOWING) -> date:
     holiday_calendar = get_holiday_calendar(holiday_region)
 
-    if rolling_convention == DateRollingConvention.MODIFIED_FOLLOWING:
+    if rolling_convention == DateRollingConvention.FOLLOWING:
         original_date = base_date
         while not is_business_day(base_date, holiday_calendar):
             base_date += datetime.timedelta(days=1)
-        if not base_date.month == original_date.month:
-            base_date = original_date
-            while not is_business_day(base_date, holiday_calendar):
-                base_date -= datetime.timedelta(days=1)
+        # this is for base date
+        # if not base_date.month == original_date.month:
+        #     base_date = original_date
+        #     while not is_business_day(base_date, holiday_calendar):
+        #         base_date -= datetime.timedelta(days=1)
 
         return base_date
 
@@ -54,7 +55,7 @@ def roll_date(base_date: date, holiday_region: str = 'NYSE',
 
 
 def add_tenor(base_date: date, tenor_string: str, holiday_region: str = 'NYSE',
-              rolling_convention: DateRollingConvention=DateRollingConvention.MODIFIED_FOLLOWING):
+              rolling_convention: DateRollingConvention=DateRollingConvention.FOLLOWING):
 
     tenor_obj = Tenor.from_string(tenor_string)
 
@@ -76,5 +77,3 @@ def add_tenor(base_date: date, tenor_string: str, holiday_region: str = 'NYSE',
     result_date = base_date + time_delta
 
     return roll_date(result_date, holiday_region, rolling_convention)
-
-
