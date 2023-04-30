@@ -1,4 +1,3 @@
-import datetime
 from math import exp
 
 from scipy.optimize import newton
@@ -7,7 +6,7 @@ from yield_curve.libor_curve import LiborCurve
 
 
 class ZeroCouponBond:
-    def __init__(self, notional: float, maturity: datetime.datetime):
+    def __init__(self, notional: float, maturity: float):
         self.notional = notional
         self.maturity = maturity
 
