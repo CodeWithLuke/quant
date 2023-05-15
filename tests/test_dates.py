@@ -1,8 +1,8 @@
 from datetime import date
 
-from business_day_calculator.utils import get_num_business_days
+from date_calculator.utils import get_num_business_days
 
-from business_day_calculator.tenor_calculator import Tenor, TenorUnit, add_tenor
+from date_calculator.tenor_calculator import Tenor, TenorUnit, add_tenor
 
 
 def test_count_business_days():

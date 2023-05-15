@@ -51,9 +51,10 @@ class CapFloor(IntEnum):
 
 
 class DayCountConvention(Enum):
-    DCC_ACTUAL_ACTUAL = 0
-    DCC_30_360 = 1
-    DCC_ACTUAL_365 = 2
+    ACT_360 = 0
+    ACT_365 = 1
+    ACT_ACT = 2
+    THIRTY_360 = 3
 
 class TenorUnit(StrEnum):
     YEAR = 'Y'

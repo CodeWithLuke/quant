@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from utils.enum import TenorUnit, DateRollingConvention
 
-from business_day_calculator.utils import get_holiday_calendar, is_business_day
+from date_calculator.utils import get_holiday_calendar, is_business_day
 
 from dateutil.relativedelta import relativedelta
 
