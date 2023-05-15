@@ -1,4 +1,4 @@
-from enum import IntEnum, Enum
+from enum import IntEnum, StrEnum, Enum
 
 
 class CashFlowFrequency(IntEnum):
@@ -48,3 +48,21 @@ class SwapLegType(Enum):
 class CapFloor(IntEnum):
     CAP = 1
     FLOOR = -1
+
+
+class DayCountConvention(Enum):
+    ACT_360 = 0
+    ACT_365 = 1
+    ACT_ACT = 2
+    THIRTY_360 = 3
+
+class TenorUnit(StrEnum):
+    YEAR = 'Y'
+    MONTH = 'M'
+    DAY = 'D'
+    WEEK = 'W'
+
+class DateRollingConvention(Enum):
+    MODIFIED_FOLLOWING = 0
+    PREVIOUS = 1
+    FOLLOWING = 2
