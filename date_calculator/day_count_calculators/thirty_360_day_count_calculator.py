@@ -10,7 +10,7 @@ https://github.com/miradulo/isda_daycounters
 
 from datetime import date
 
-from abs_day_count_calculator import AbsDayCountCalculator
+from date_calculator.day_count_calculators.abs_day_count_calculator import AbsDayCountCalculator
 from utils.enum import DayCountConvention
 
 

@@ -8,7 +8,7 @@ http://www.hsbcnet.com/gbm/attachments/standalone/2006-isda-definitions.pdf
 https://github.com/miradulo/isda_daycounters
 """
 
-from abs_day_count_calculator import AbsDayCountCalculator
+from date_calculator.day_count_calculators.abs_day_count_calculator import AbsDayCountCalculator
 
 from datetime import date
 

@@ -3,6 +3,7 @@ from datetime import date
 from date_calculator.utils import get_num_business_days
 
 from date_calculator.tenor_calculator import Tenor, TenorUnit, add_tenor
+from product.fixed_leg import FixedLeg
 
 
 def test_count_business_days():
@@ -25,3 +26,11 @@ def test_add_tenor():
     d2 = add_tenor(date(2023, 7, 3), "1d")
 
     assert d2 == date(2023, 7, 5)
+
+def test_leg_const():
+
+    fl = FixedLeg(1000000, 0.05, "3M", start_date=date(2016, 1, 4), end_date=date(2026, 1, 30))
+
+    print(fl.cash_flows)
+
+    assert True
