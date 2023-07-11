@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AbsInstrument(ABC):
+class AbsCurveInstrument(ABC):
 
     @property
     @abstractmethod
