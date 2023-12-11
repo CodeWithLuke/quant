@@ -1,3 +1,3 @@
 # quant
 
-Just a library for learning quant stuff!
+Just a library I made for fun and for learning quant stuff!
