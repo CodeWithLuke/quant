@@ -52,4 +52,4 @@ class FuturesCurveInstrument(AbsCurveInstrument):
 
     @staticmethod
     def instrument_type():
-        return CurveInstrument.IR_FUTURES
+        return CurveInstrument.IR_FUTURE

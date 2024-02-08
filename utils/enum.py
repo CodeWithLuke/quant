@@ -10,7 +10,7 @@ class CashFlowFrequency(IntEnum):
 
 class CurveInstrument(Enum):
     CASH_DEPOSIT = 1
-    IR_FUTURES = 2
+    IR_FUTURE = 2
     IR_SWAP = 3
 
 

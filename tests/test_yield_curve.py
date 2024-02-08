@@ -3,7 +3,7 @@ import pytest
 from utils.constants import *
 from utils.enum import CashFlowFrequency
 from yield_curve.libor_curve import LiborCurve
-from yield_curve.spot_rate_point import SpotRatePoint
+from instrument_yield_curve.curve_point import SpotRatePoint
 
 
 def test_yield_curve_construction():

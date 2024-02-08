@@ -13,7 +13,7 @@ from yield_curve.libor_curve_builder.long_libor_curve_builder import LongLiborCu
 from yield_curve.libor_curve_builder.mid_libor_curve_builder import MidLiborCurveBuilder
 from yield_curve.libor_curve_builder.short_libor_curve_builder import ShortLiborCurveBuilder
 
-from yield_curve.spot_rate_point import SpotRatePoint
+from instrument_yield_curve.curve_point import SpotRatePoint
 
 
 class LiborCurve(AbsCurve):
@@ -58,10 +58,10 @@ class LiborCurve(AbsCurve):
     @classmethod
     def from_market_data_dict(cls, market_data: dict):
         assert all([curve_instrument in market_data for curve_instrument in (
-            CurveInstrument.CASH_DEPOSIT, CurveInstrument.IR_FUTURES, CurveInstrument.IR_SWAP)])
+            CurveInstrument.CASH_DEPOSIT, CurveInstrument.IR_FUTURE, CurveInstrument.IR_SWAP)])
 
         return cls.from_market_quotes(
-            market_data[CurveInstrument.CASH_DEPOSIT], market_data[CurveInstrument.IR_FUTURES],
+            market_data[CurveInstrument.CASH_DEPOSIT], market_data[CurveInstrument.IR_FUTURE],
             market_data[CurveInstrument.IR_SWAP]
         )
 
@@ -84,7 +84,7 @@ class LiborCurve(AbsCurve):
         curve_data += lcb.curve
 
         market_data = {
-            CurveInstrument.CASH_DEPOSIT: cash_libor_rates, CurveInstrument.IR_FUTURES: eurodollar_futures_prices,
+            CurveInstrument.CASH_DEPOSIT: cash_libor_rates, CurveInstrument.IR_FUTURE: eurodollar_futures_prices,
             CurveInstrument.IR_SWAP: market_swap_rates
         }
 
